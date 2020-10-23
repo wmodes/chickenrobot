@@ -10,6 +10,8 @@ SPR = 200    # Steps per revolution (360/1.8) from stepper datasheet
 step_count = SPR
 delay = 0.005   # 1 second / SPR
 
+GPIO.setmode(GPIO.BCM)
+
 for x in range(step_count):
     GPIO.output(STEP, GPIO.HIGH)
     sleep(delay)
@@ -23,4 +25,4 @@ for x in range(step_count):
     GPIO.output(STEP, GPIO.HIGH)
     sleep(delay)
     GPIO.output(STEP, GPIO.LOW)
-    sleep(delay) 
+    sleep(delay)

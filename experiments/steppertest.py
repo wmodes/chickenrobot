@@ -14,6 +14,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR, GPIO.OUT)
 GPIO.setup(STEP, GPIO.OUT)
 
+GPIO.output(DIR, CW)
+
 for x in range(step_count):
     GPIO.output(STEP, GPIO.HIGH)
     sleep(delay)

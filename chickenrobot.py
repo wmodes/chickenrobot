@@ -44,8 +44,8 @@ class Chickenrobot(object):
         self.door.report()
 
     def report(self):
-        self.light.report()
-        self.door.report()
+        return self.light.report() + "\n" +
+            self.door.report()
 
 
 def main():

@@ -4,6 +4,7 @@
 # license: MIT
 
 from light import Light
+from door import Door
 
 # constants
 # Felton, CA 37.0513° N, 122.0733° W
@@ -12,6 +13,8 @@ latitude = 37.0513
 longitude = -122.0733
 sunrise_delay = 0 # minutes
 sunset_delay = 60 # minutes
+
+revs = 10   # number of revolutions to bring door up or lower it down
 
 # General psuedocode
 #
@@ -36,11 +39,19 @@ class Chickenrobot(object):
     """controller class for a coop door and cam controller"""
     def __init__(self):
         self.light = Light(city_name, latitude, longitude, sunrise_delay, sunset_delay)
+        self.light.report()
+        self.door = Door(revs)
+        self.door.report()
+
+    def report(self):
+        self.light.report()
+        self.door.report()
 
 
 def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
+    chickenrobot.report()
 
 if __name__ == '__main__':
     main()

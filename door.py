@@ -53,9 +53,9 @@ class Door(object):
 
     def report(self):
         if self.status == DOWN:
-            return "The door is currently CLOSED"
+            return "Door status: The door is currently CLOSED"
         else:
-            return "The door is currently OPEN"
+            return "Door status: The door is currently OPEN"
 
 
 def main():

@@ -63,6 +63,7 @@ def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
     print(chickenrobot.report())
+    chickenrobot.onduty()
 
 if __name__ == '__main__':
     main()

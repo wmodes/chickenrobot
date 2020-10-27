@@ -45,7 +45,6 @@ class Chickenrobot(object):
         self.door.report()
 
     def on_duty(self):
-        print("Chicken Robot: On duty.")
         while(1):
             if self.light.is_dark() and self.door.is_open():
                 self.door.close_door()

@@ -66,7 +66,9 @@ class Chickenrobot(object):
 def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
+    print(1)
     print(chickenrobot.report())
+    print(2)
     chickenrobot.on_duty()
 
 if __name__ == '__main__':

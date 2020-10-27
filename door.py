@@ -49,7 +49,7 @@ class Door(object):
         self._move_door(CCW)
 
     def report(self):
-        if status == DOWN:
+        if self.status == DOWN:
             return "The door is currently CLOSED"
         else:
             return "The door is currently OPEN"

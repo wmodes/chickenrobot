@@ -56,8 +56,8 @@ class Chickenrobot(object):
 
     def report(self):
         print("Chicken Robot: On duty.")
-        print self.light.report()
-        print self.door.report()
+        print(self.light.report())
+        print(self.door.report())
 
 
 def main():

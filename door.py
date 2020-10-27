@@ -30,6 +30,7 @@ class Door(object):
     def __init__(self, revs):
         self.revs = revs
         self.status = DOWN
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(DIR, GPIO.OUT)
         GPIO.setup(STEP, GPIO.OUT)

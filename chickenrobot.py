@@ -51,7 +51,7 @@ class Chickenrobot(object):
 def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
-    chickenrobot.report()
+    print(chickenrobot.report())
 
 if __name__ == '__main__':
     main()

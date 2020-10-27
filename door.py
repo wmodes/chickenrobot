@@ -44,9 +44,11 @@ class Door(object):
 
     def door_up(self):
         self._move_door(CW)
+        self.status = UP
 
     def door_down(self):
         self._move_door(CCW)
+        self.status = DOWN
 
     def report(self):
         if self.status == DOWN:

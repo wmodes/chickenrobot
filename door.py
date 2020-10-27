@@ -43,11 +43,11 @@ class Door(object):
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
 
-    def door_up(self):
+    def open_door(self):
         self._move_door(CW)
         self.status = OPEN
 
-    def door_down(self):
+    def chose_door(self):
         self._move_door(CCW)
         self.status = CLOSED
 
@@ -69,11 +69,11 @@ def main():
     revs = 10
 
     door = Door(revs)
-    door.door_up()
+    door.open_door()
     print(door.report())
 
     sleep(1)
-    door.door_down()
+    door.close_door()
     print(door.report())
 
 if __name__ == '__main__':

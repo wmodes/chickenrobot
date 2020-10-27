@@ -18,8 +18,8 @@ STEP = 21   # Step GPIO pin
 CW = 1      # Clockwise rotation
 CCW = 0     # Anti-clockwise rotation
 SPR = 200    # Steps per revolution (360/1.8) from stepper datasheet
-DOWN = 0
-UP = 1
+CLOSED = 0
+OPEN = 1
 
 step_count = SPR
 delay = 0.005   # 1 second / SPR
@@ -29,7 +29,7 @@ class Door(object):
 
     def __init__(self, revs):
         self.revs = revs
-        self.status = DOWN
+        self.status = CLOSED
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(DIR, GPIO.OUT)
@@ -45,14 +45,20 @@ class Door(object):
 
     def door_up(self):
         self._move_door(CW)
-        self.status = UP
+        self.status = OPEN
 
     def door_down(self):
         self._move_door(CCW)
-        self.status = DOWN
+        self.status = CLOSED
+
+    def is_open(self):
+        return self.status == OPEN
+
+    def is_closed(self):
+        return self.status == CLOSED
 
     def report(self):
-        if self.status == DOWN:
+        if self.status == CLOSED:
             return "Door status: The door is currently CLOSED"
         else:
             return "Door status: The door is currently OPEN"

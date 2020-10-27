@@ -5,6 +5,7 @@
 
 from light import Light
 from door import Door
+from time import sleep
 
 # constants
 # Felton, CA 37.0513° N, 122.0733° W

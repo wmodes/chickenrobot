@@ -65,12 +65,12 @@ class Light(object):
         if DEBUG: print("DEBUG: sunset", ss)
         if DEBUG: print("DEBUG: close door", cd)
         if self.is_dark(dt):
-            text = f"Light status: It is dark now in {self.location}. Doors should be closed."
+            text = f"Light status: It is dark now in {self.location}. Doors should be closed.\n"
         else:
-            text = f"Light status: It is daylight now in {self.location}. Doors should be open."
+            text = f"Light status: It is daylight now in {self.location}. Doors should be open.\n"
         # sunrise hasn't happened yet
         if now < sr:
-            text += f" The sun will rise at {sr.hour}:{sr.minute}"
+            text += f"    The sun will rise at {sr.hour}:{sr.minute}"
             if sr == od:
                  text += " when the doors will open."
             else:
@@ -78,7 +78,7 @@ class Light(object):
             return text
         # sunset has not yet happened
         elif now < ss:
-            text += f" The sun will set at {ss.hour}:{ss.minute}"
+            text += f"    The sun will set at {ss.hour}:{ss.minute}"
             if ss == cd:
                  text += " when the doors will close."
             else:

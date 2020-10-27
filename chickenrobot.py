@@ -55,7 +55,7 @@ class Chickenrobot(object):
                 self.report()
             else:
                 sleep(5)
-                print('.')
+                # print('.')
 
     def report(self):
         print("Chicken Robot: On duty.")
@@ -66,9 +66,7 @@ class Chickenrobot(object):
 def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
-    print(1)
-    print(chickenrobot.report())
-    print(2)
+    chickenrobot.report()
     chickenrobot.on_duty()
 
 if __name__ == '__main__':

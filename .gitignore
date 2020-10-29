@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 experiments/camera.py
 *.bmp
+*.jpg

@@ -65,7 +65,7 @@ class Camera(object):
     def report(self):
         text = "Camera status:\n"
         for image_num in range(len(self.cam_array)):
-            text += "\tCamera " + image_num + " in service\n"
+            text += "\tCamera " + str(image_num) + " in service\n"
         return text
 
 

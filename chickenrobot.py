@@ -5,17 +5,26 @@
 
 from light import Light
 from door import Door
+from camera import Camera
+
 from time import sleep
 
-# constants
+# CONSTANTS
+#
+# Light class
 # Felton, CA 37.0513° N, 122.0733° W
-city_name = "Felton, CA"
-latitude = 37.0513
-longitude = -122.0733
-sunrise_delay = 0 # minutes
-sunset_delay = 60 # minutes
-
-revs = 10   # number of revolutions to bring door up or lower it down
+CITY_NAME = "Felton, CA"
+LATITUDE = 37.0513
+LONGITUDE = -122.0733
+SUNRISE_DELAY = 0 # minutes
+SUNSET_DELAY = 60 # minutes
+#
+# Camera class
+MAX_HORZ = 1280
+MAX_VERT = 1024
+#
+# Door class
+REVS = 10   # number of revolutions to bring door up or lower it down
 
 # General psuedocode
 #
@@ -39,10 +48,14 @@ revs = 10   # number of revolutions to bring door up or lower it down
 class Chickenrobot(object):
     """controller class for a coop door and cam controller"""
     def __init__(self):
-        self.light = Light(city_name, latitude, longitude, sunrise_delay, sunset_delay)
-        self.light.report()
-        self.door = Door(revs)
+        self.light = Light(CITY_NAME, LATITUDE, LONGITUDE, SUNRISE_DELAY, SUNSET_DELAY)
+        self.door = Door(REVS)
+        self.camera = Camera()
+
+        # issue reports on start
         self.door.report()
+        self.light.report()
+        self.camera.report()
 
     def on_duty(self):
         while(1):

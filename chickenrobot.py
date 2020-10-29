@@ -87,7 +87,7 @@ def main():
     try:
         chickenrobot.on_duty()
     except KeyboardInterrupt:
-        print("Chicken Robot: Off duty.")
+        print("\n\nChicken Robot: Off duty.")
 
 if __name__ == '__main__':
     main()

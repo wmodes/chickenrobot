@@ -84,7 +84,10 @@ class Chickenrobot(object):
 def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
-    chickenrobot.on_duty()
+    try:
+        chickenrobot.on_duty()
+    except KeyboardInterrupt:
+        print("Chicken Robot: Off duty.")
 
 if __name__ == '__main__':
     main()

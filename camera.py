@@ -63,9 +63,9 @@ class Camera(object):
             cv.imshow("Test Image", self.image_array[image_num])
 
     def report(self):
-        text = "Camera status:\n"
+        text = "Camera status:"
         for image_num in range(len(self.cam_array)):
-            text += "\tCamera " + str(image_num) + " in service\n"
+            text += "\n\tCamera " + str(image_num) + " in service"
         return text
 
 

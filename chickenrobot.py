@@ -54,17 +54,20 @@ class Chickenrobot(object):
         self.door = Door(REVS)
         self.camera = Camera(MAX_HORZ, MAX_VERT)
 
-        # issue reports on start
-        self.door.report()
-        self.light.report()
-        self.camera.report()
+
 
     def on_duty(self):
+        # issue reports on start
+        print(self.door.report())
+        print(self.light.report())
+        print(self.camera.report())
         while(1):
             if self.light.is_dark() and self.door.is_open():
+                print("Door status: Door closing...")
                 self.door.close_door()
                 self.report()
             elif self.light.is_light() and self.door.is_closed():
+                print("Door status: Door opening...")
                 self.door.open_door()
                 self.report()
             else:
@@ -73,14 +76,14 @@ class Chickenrobot(object):
 
     def report(self):
         print("Chicken Robot: On duty.")
-        print(self.light.report())
         print(self.door.report())
+        print(self.light.report())
+        print(self.camera.report())
 
 
 def main():
     # nuthin here yet
     chickenrobot = Chickenrobot()
-    chickenrobot.report()
     chickenrobot.on_duty()
 
 if __name__ == '__main__':

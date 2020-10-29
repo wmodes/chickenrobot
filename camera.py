@@ -8,7 +8,7 @@ import cv2 as cv
 # CONSTANTS
 MAX_CAMS = 4
 IMAGE_DIR = "images/"
-DEBUG = True
+DEBUG = False
 
 # NOTE: max resolution of the hbv-1615 is 1280x1024
 # If you switch to another cam, you may have to adjust this
@@ -30,10 +30,11 @@ class Camera(object):
         for cap_num in range(MAX_CAMS):
             cap = cv.VideoCapture(cap_num)
             if cap is None or not cap.isOpened():
-                print("Camera: camera", cap_num, "not found")
+                if DEBUG: print("DEBUG: Camera: camera", cap_num, "not found")
+                pass
             else:
                 self.cam_array.append(cap)
-                print("Camera: camera", cap_num, "found")
+                if DEBUG: print("DEBUG: Camera: camera", cap_num, "found")
 
     def _setup_cams(self):
         """configure cams"""
@@ -62,9 +63,10 @@ class Camera(object):
             cv.imshow("Test Image", self.image_array[image_num])
 
     def report(self):
-        print ("Camera status:")
+        text = "Camera status:\n"
         for image_num in range(len(self.cam_array)):
-            print("\tCamera", image_num, "in service")
+            text += "\tCamera " + image_num + " in service\n"
+        return text
 
 
 def main():
@@ -77,7 +79,7 @@ def main():
         MAX_VERT = 1080
 
     camera = Camera(MAX_HORZ, MAX_VERT)
-    camera.report()
+    print(camera.report())
     camera.take_all_images()
     camera.write_images()
 

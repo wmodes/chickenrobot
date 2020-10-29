@@ -24,12 +24,15 @@ class Light(object):
         self.sunrise_delay = sunrise_delay
         self.sunset_delay = sunset_delay
         self.sun = Sun(lat, long)
+
     def sunrise(self, dt=None):
         """returns today's sunrise in local time"""
         return self.sun.get_local_sunrise_time(dt)
+
     def open_door(self, dt=None):
         """returns today's sunrise in local time + sunrise_delay """
         return self.sunrise(dt) + timedelta(minutes=self.sunrise_delay)
+
     def sunset(self, dt=None):
         """returns today's sunset in local time"""
         ss = self.sun.get_local_sunset_time(dt)
@@ -38,9 +41,11 @@ class Light(object):
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             ss = self.sun.get_local_sunset_time(tomorrow)
         return ss
+
     def close_door(self, dt=None):
         """returns today's sunset in local time + sunset_delay"""
         return self.sunset(dt) + timedelta(minutes=self.sunset_delay)
+
     def is_dark(self, dt=None):
         now = datetime.now().astimezone(to_zone)
         if dt: now = dt
@@ -49,8 +54,10 @@ class Light(object):
         if od < now < cd:
             return False
         return True
+
     def is_light(self, dt=None):
         return not self.is_dark(dt)
+
     def report(self, dt=None):
         """returns a report string"""
         sr = self.sunrise(dt)
@@ -75,7 +82,6 @@ class Light(object):
                  text += " when the doors will open."
             else:
                 text += f" and the doors will open at {od.hour}:{od.minute}."
-            return text
         # sunset has not yet happened
         elif now < ss:
             text += f"\tThe sun will set at {ss.hour}:{ss.minute}"
@@ -83,7 +89,6 @@ class Light(object):
                  text += " when the doors will close."
             else:
                 text += f" and the doors will close at {cd.hour}:{cd.minute}."
-            return text
         # sunset already happened
         else:
             text += f" The sun set at {ss.hour}:{ss.minute}"
@@ -94,7 +99,7 @@ class Light(object):
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             srt = self.sunrise(tomorrow)
             text += f" Tomorrow's sunrise is at {srt.hour}:{srt.minute}."
-            return text
+        return text
 
 
 def main():

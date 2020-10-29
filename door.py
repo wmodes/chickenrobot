@@ -58,15 +58,14 @@ class Door(object):
             sleep(delay)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
-        self._store_door_state(direction)
+        self.status = direction
+        self._store_door_state()
 
     def open_door(self):
         self._move_door(OPEN)
-        self.status = OPEN
 
     def close_door(self):
         self._move_door(CLOSED)
-        self.status = CLOSED
 
     def is_open(self):
         return self.status == OPEN

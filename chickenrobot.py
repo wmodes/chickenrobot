@@ -58,9 +58,7 @@ class Chickenrobot(object):
 
     def on_duty(self):
         # issue reports on start
-        print(self.door.report())
-        print(self.light.report())
-        print(self.camera.report())
+        self.report()
         while(1):
             if self.light.is_dark() and self.door.is_open():
                 print("Door status: Door closing...")

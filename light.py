@@ -91,7 +91,7 @@ class Light(object):
                 text += f" and the doors will close at {cd.hour}:{cd.minute}."
         # sunset already happened
         else:
-            text += f" The sun set at {ss.hour}:{ss.minute}"
+            text += f"\tThe sun set at {ss.hour}:{ss.minute}"
             if ss == cd:
                  text += " and the doors closed."
             else:

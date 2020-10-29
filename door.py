@@ -13,16 +13,13 @@ if sys.platform == "darwin":
 import RPi.GPIO as GPIO
 from time import sleep
 import os.path
+from settings import *
 
-DIR = 20            # Direction GPIO pin
-STEP = 21           # Step GPIO pin
 CCW = CLOSED = 0    # Anti-clockwise rotation
 CW = OPEN = 1       # Clockwise rotation
-SPR = 200           # Steps per revolution (360/1.8) from stepper datasheet
-DOOR_STATE_FILE = "door.state"
 
-step_count = SPR
-delay = 0.005   # 1 second / SPR
+STEP_COUNT = SPR
+STEP_DELAY = 1 / SPR   # 1 second / SPR
 
 class Door(object):
     """class to open and close coop door and report on status"""
@@ -53,11 +50,11 @@ class Door(object):
 
     def _move_door(self, direction):
         GPIO.output(DIR, direction)
-        for x in range(self.revs * step_count):
+        for x in range(self.revs * STEP_COUNT):
             GPIO.output(STEP, GPIO.HIGH)
-            sleep(delay)
+            sleep(STEP_DELAY)
             GPIO.output(STEP, GPIO.LOW)
-            sleep(delay)
+            sleep(STEP_DELAY)
         self.status = direction
         self._store_door_state()
 

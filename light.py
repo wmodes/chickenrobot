@@ -7,6 +7,7 @@ import datetime
 from suntime import Sun, SunTimeException
 from datetime import datetime, timedelta
 from dateutil import tz
+from settings import *
 
 # Auto-detect timezones
 from_zone = tz.tzutc()

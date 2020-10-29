@@ -3,28 +3,13 @@
 # date: Oct 2020
 # license: MIT
 
+from comms import Comms
 from light import Light
 from door import Door
 from camera import Camera
+from settings import *
 
 from time import sleep
-
-# CONSTANTS
-#
-# Light class
-# Felton, CA 37.0513° N, 122.0733° W
-CITY_NAME = "Felton, CA"
-LATITUDE = 37.0513
-LONGITUDE = -122.0733
-SUNRISE_DELAY = 0 # minutes
-SUNSET_DELAY = 60 # minutes
-#
-# Camera class
-MAX_HORZ = 1280
-MAX_VERT = 1024
-#
-# Door class
-REVS = 10   # number of revolutions to bring door up or lower it down
 
 # General psuedocode
 #
@@ -50,34 +35,42 @@ class Chickenrobot(object):
     def __init__(self):
         #
         # instantiate all our classes
+        self.comms = Comms(ORIGIN_NUM, TARGET_NUMS)
         self.light = Light(CITY_NAME, LATITUDE, LONGITUDE, SUNRISE_DELAY, SUNSET_DELAY)
         self.door = Door(REVS)
         self.camera = Camera(MAX_HORZ, MAX_VERT)
 
-
-
     def on_duty(self):
         # issue reports on start
-        self.report()
+        self.send_report_and_photos()
         while(1):
             if self.light.is_dark() and self.door.is_open():
                 print("Door status: Door closing...")
                 self.door.close_door()
-                self.report()
+                self.send_report_and_photos()
             elif self.light.is_light() and self.door.is_closed():
                 print("Door status: Door opening...")
                 self.door.open_door()
-                self.report()
+                self.send_report_and_photos()
             else:
                 sleep(5)
                 # print('.')
 
     def report(self):
-        print("Chicken Robot: On duty.")
-        print(self.door.report())
-        print(self.light.report())
-        print(self.camera.report())
+        msg_text = ""
+        msg_text += "Chicken Robot: On duty." + '\n'
+        msg_text += self.door.report() + '\n'
+        msg_text += self.light.report() + '\n'
+        msg_text += self.camera.report() + '\n'
+        return(msg_text)
 
+    def send_report(self):
+        self.comms.send_text(self.report())
+
+    def send_report_and_photos(self):
+        self.comms.send_text(self.report())
+        self.camera.take_and_upload_images()
+        self.comms.send_text_and_photos("Here's photos of the coop")
 
 def main():
     # nuthin here yet

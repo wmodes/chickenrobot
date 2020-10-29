@@ -52,7 +52,7 @@ class Chickenrobot(object):
         # instantiate all our classes
         self.light = Light(CITY_NAME, LATITUDE, LONGITUDE, SUNRISE_DELAY, SUNSET_DELAY)
         self.door = Door(REVS)
-        self.camera = Camera()
+        self.camera = Camera(MAX_HORZ, MAX_VERT)
 
         # issue reports on start
         self.door.report()

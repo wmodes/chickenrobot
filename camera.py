@@ -62,10 +62,12 @@ class Camera(object):
             cv.imwrite(filename, self.image_array[image_num])
 
     def upload_images(self):
+        cnopts = pysftp.CnOpts(knownhosts='known_hosts')
         with pysftp.Connection(host=SFTP_SERVER,
                                username=SFTP_USER,
                                password=SFTP_PASSWORD,
-                               log=SFTP_LOG) as sftp:
+                               log=SFTP_LOG,
+                               cnopts=cnopts) as sftp:
             with sftp.cd(SFTP_IMAGE_DIR):
                 for image_num in range(self.num_cams):
                     filename = IMAGE_DIR + "image" + str(image_num) + ".jpg"

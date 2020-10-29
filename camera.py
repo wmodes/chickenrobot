@@ -19,36 +19,36 @@ class Camera(object):
     def __init__(self, max_horz, max_vert):
         self.max_h = max_horz
         self.max_v = max_vert
-        self.cap_array = []
+        self.cam_array = []
         self.image_array = []
         self._find_cams()
         self._setup_cams()
 
     def _find_cams(self):
         """find usb cams"""
-        self.cap_array = []
+        self.cam_array = []
         for cap_num in range(MAX_CAMS):
             cap = cv.VideoCapture(cap_num)
             if cap is None or not cap.isOpened():
                 print("Camera: camera", cap_num, "not found")
             else:
-                self.cap_array.append(cap)
+                self.cam_array.append(cap)
                 print("Camera: camera", cap_num, "found")
 
     def _setup_cams(self):
         """configure cams"""
-        for cam in self.cap_array:
+        for cam in self.cam_array:
             cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
             cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
 
     def take_image(self, cam_num):
         # capture image
-        s, im = self.cap_array[cam_num].read()
+        s, im = self.cam_array[cam_num].read()
         return(im)
 
     def take_all_images(self):
         self.image_array = []
-        for cam_num in range(len(self.cap_array)):
+        for cam_num in range(len(self.cam_array)):
             self.image_array.append(self.take_image(cam_num))
 
     def write_images(self):
@@ -61,6 +61,12 @@ class Camera(object):
         for image_num in range(len(self.image_array)):
             cv.imshow("Test Image", self.image_array[image_num])
 
+    def report(self):
+        print ("Camera status:")
+        for image_num in range(len(self.cam_array)):
+            print("    Camera", image_num, "in service")
+
+
 def main():
     import sys
     if sys.platform != "darwin":
@@ -71,6 +77,7 @@ def main():
         MAX_VERT = 1080
 
     camera = Camera(MAX_HORZ, MAX_VERT)
+    camera.report()
     camera.take_all_images()
     camera.write_images()
 

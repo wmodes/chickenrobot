@@ -48,6 +48,8 @@ REVS = 10   # number of revolutions to bring door up or lower it down
 class Chickenrobot(object):
     """controller class for a coop door and cam controller"""
     def __init__(self):
+        #
+        # instantiate all our classes
         self.light = Light(CITY_NAME, LATITUDE, LONGITUDE, SUNRISE_DELAY, SUNSET_DELAY)
         self.door = Door(REVS)
         self.camera = Camera()

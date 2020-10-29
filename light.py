@@ -70,7 +70,7 @@ class Light(object):
             text = f"Light status: It is daylight now in {self.location}. Doors should be open.\n"
         # sunrise hasn't happened yet
         if now < sr:
-            text += f"    The sun will rise at {sr.hour}:{sr.minute}"
+            text += f"\tThe sun will rise at {sr.hour}:{sr.minute}"
             if sr == od:
                  text += " when the doors will open."
             else:
@@ -78,7 +78,7 @@ class Light(object):
             return text
         # sunset has not yet happened
         elif now < ss:
-            text += f"    The sun will set at {ss.hour}:{ss.minute}"
+            text += f"\tThe sun will set at {ss.hour}:{ss.minute}"
             if ss == cd:
                  text += " when the doors will close."
             else:

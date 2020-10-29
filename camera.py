@@ -27,14 +27,14 @@ class Camera(object):
     def _find_cams(self):
         """find usb cams"""
         self.cam_array = []
-        for cap_num in range(MAX_CAMS):
-            cap = cv.VideoCapture(cap_num)
-            if cap is None or not cap.isOpened():
-                if DEBUG: print("DEBUG: Camera: camera", cap_num, "not found")
+        for cam_num in range(MAX_CAMS):
+            cam = cv.VideoCapture(cam_num)
+            if cam is None or not cam.isOpened():
+                if DEBUG: print("DEBUG: Camera: camera", cam_num, "not found")
                 pass
             else:
-                self.cam_array.append(cap)
-                if DEBUG: print("DEBUG: Camera: camera", cap_num, "found")
+                self.cam_array.append(cam)
+                if DEBUG: print("DEBUG: Camera: camera", cam_num, "found")
 
     def _setup_cams(self):
         """configure cams"""

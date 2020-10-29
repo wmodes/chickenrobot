@@ -47,7 +47,7 @@ class Door(object):
         self._move_door(CW)
         self.status = OPEN
 
-    def chose_door(self):
+    def close_door(self):
         self._move_door(CCW)
         self.status = CLOSED
 

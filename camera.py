@@ -45,15 +45,24 @@ class Camera(object):
             cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
             cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
 
-    def take_image(self, cam_num):
+    def _release_cams(self):
+        """turn off cams after use"""
+        for cam in self.cam_array:
+            cam.release()
+        self.cam_array = []
+
+    def _take_image(self, cam_num):
         # capture image
         s, im = self.cam_array[cam_num].read()
         return(im)
 
     def take_all_images(self):
+        # self._find_cams()
+        # self._setup_cams()
         self.image_array = []
         for cam_num in range(self.num_cams):
-            self.image_array.append(self.take_image(cam_num))
+            self.image_array.append(self._take_image(cam_num))
+        # self._release_cams()
 
     def write_images(self):
         for image_num in range(self.num_cams):
@@ -84,9 +93,12 @@ class Camera(object):
         self.upload_images()
 
     def report(self):
-        text = "Camera status:"
-        for image_num in range(self.num_cams):
-            text += "\n\tCamera " + str(image_num) + " in service"
+        if self.num_cams == 0:
+            text = "I have no camera watching. "
+        if self.num_cams == 1:
+            text = "I have one camera watching. "
+        else:
+            text = f"I have {self.num_cams} camera watching. "
         return text
 
 

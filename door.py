@@ -59,10 +59,18 @@ class Door(object):
         self._store_door_state()
 
     def open_door(self):
-        self._move_door(OPEN)
+        if self.status != OPEN:
+            self._move_door(OPEN)
+            return "I just opened the doors. "
+        else:
+            return "The doors are already open. "
 
     def close_door(self):
-        self._move_door(CLOSED)
+        if self.status != CLOSED:
+            self._move_door(CLOSED)
+            return "I just closed the doors. "
+        else:
+            return "The doors are already closed. "
 
     def is_open(self):
         return self.status == OPEN
@@ -72,9 +80,11 @@ class Door(object):
 
     def report(self):
         if self.status == CLOSED:
-            return "Door status: The door is currently CLOSED"
+            # log "Door status: The door is currently CLOSED"
+            return "The doors are currently CLOSED. "
         else:
-            return "Door status: The door is currently OPEN"
+            # log "Door status: The door is currently OPEN"
+            return "The doors are currently OPEN. "
 
 
 def main():

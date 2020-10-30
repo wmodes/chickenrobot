@@ -42,7 +42,7 @@ class Chickenrobot(object):
 
     def on_duty(self):
         # issue reports on start
-        self.send_report_and_photos()
+        # self.send_report_and_photos()
         while(1):
             if self.light.is_dark() and self.door.is_open():
                 print("Door status: Door closing...")
@@ -53,24 +53,43 @@ class Chickenrobot(object):
                 self.door.open_door()
                 self.send_report_and_photos()
             else:
-                sleep(5)
+                command_list = self.comms.check_for_commands()
+                # print("command list:", command_list)
+                if command_list:
+                    for request_num, cmd in command_list:
+                        if cmd == "photo" or cmd == "image" or cmd == "picture":
+                            self.comms.send_text_and_photos("Here's photos of the coop. ", request_num)
+                        elif cmd == "close":
+                            self.comms.send_text(self.door.close_door(), request_num)
+                        elif cmd == "open":
+                            self.comms.send_text(self.door.open_door(), request_num)
+                        elif cmd == "status" or cmd == "report":
+                            self.send_report_and_photos(request_num)
+                        elif cmd == "door":
+                            self.comms.send_text(self.door.report(), request_num)
+                        elif cmd == "sunrise" or cmd == "sunset" or cmd == "light":
+                            self.comms.send_text(self.light.report(), request_num)
+                        else:
+                            txt = "Hi! I'm on duty. Helpful commands are status, photo, open, close, door, sunset, sunrise."
+                            self.comms.send_text(txt, request_num)
+            sleep(5)
                 # print('.')
 
     def report(self):
         msg_text = ""
-        msg_text += "Chicken Robot: On duty." + '\n'
-        msg_text += self.door.report() + '\n'
-        msg_text += self.light.report() + '\n'
-        msg_text += self.camera.report() + '\n'
+        msg_text += "Hi! I'm on duty. "
+        msg_text += self.door.report()
+        msg_text += self.camera.report()
+        msg_text += self.light.report()
         return(msg_text)
 
     def send_report(self):
         self.comms.send_text(self.report())
 
-    def send_report_and_photos(self):
-        self.comms.send_text(self.report())
+    def send_report_and_photos(self, passed_num=None):
+        self.comms.send_text(self.report(), passed_num)
         self.camera.take_and_upload_images()
-        self.comms.send_text_and_photos("Here's photos of the coop")
+        self.comms.send_text_and_photos("Here's photos of the coop. ", passed_num)
 
 def main():
     # nuthin here yet
@@ -78,7 +97,7 @@ def main():
     try:
         chickenrobot.on_duty()
     except KeyboardInterrupt:
-        print("\n\nChicken Robot: Off duty.")
+        print("\n\nChicken Robot: I'm off duty.")
 
 if __name__ == '__main__':
     main()

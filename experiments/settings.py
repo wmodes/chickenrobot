@@ -15,13 +15,14 @@ LATITUDE = 37.0513
 LONGITUDE = -122.0733
 SUNRISE_DELAY = 0 # minutes
 SUNSET_DELAY = 60 # minutes
+TIME_FORMAT = '%-I:%M%p'
 
 # Camera class
 #
 MAX_HORZ = 1280
 MAX_VERT = 1024
 MAX_CAMS = 4
-NUM_CAMS = 2
+NUM_CAMS = 1
 IMAGE_DIR = "images/"
 SFTP_SERVER = 'sftp.sd5.gpaas.net'
 SFTP_USER = '41496'

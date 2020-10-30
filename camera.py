@@ -98,7 +98,7 @@ class Camera(object):
         if self.num_cams == 1:
             text = "I have one camera watching. "
         else:
-            text = f"I have {self.num_cams} camera watching. "
+            text = f"I have {self.num_cams} cameras watching. "
         return text
 
 

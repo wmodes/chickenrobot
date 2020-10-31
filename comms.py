@@ -94,6 +94,9 @@ class Comms(object):
         for msg in messages:
             # check if on list of recipients
             if msg.from_ not in TARGET_NUMS:
+                # no, kill it
+                print("Comms: Deleting msg from", msg.from_, "Body:", msg.body)
+                self.client.messages(msg.sid).delete()
                 continue
             # act on command
             cmd = ""
@@ -102,7 +105,7 @@ class Comms(object):
                     cmd = keyword
                     break
             command_list.append((msg.from_, cmd))
-            print("Comms: Messageg received: From:", msg.from_, "Command:", cmd)
+            print("Comms: Message received: From:", msg.from_, "Command:", cmd)
             # delete message
             self.client.messages(msg.sid).delete()
         return command_list

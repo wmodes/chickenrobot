@@ -45,13 +45,17 @@ class Chickenrobot(object):
         # self.send_report_and_photos()
         while(1):
             if self.light.is_dark() and self.door.is_open():
-                print("Door status: Door closing...")
-                self.door.close_door()
-                self.send_report_and_photos()
+                result = self.door.close_door_auto()
+                if result:
+                    print("Door status:", result)
+                    # self.comms.send_text(result)
+                    self.send_report_and_photos()
             elif self.light.is_light() and self.door.is_closed():
-                print("Door status: Door opening...")
-                self.door.open_door()
-                self.send_report_and_photos()
+                result = self.door.open_door_auto()
+                if result:
+                    print("Door status:", result)
+                    # self.comms.send_text(result)
+                    self.send_report_and_photos()
             else:
                 command_list = self.comms.check_for_commands()
                 # print("command list:", command_list)
@@ -60,9 +64,9 @@ class Chickenrobot(object):
                         if cmd == "photo" or cmd == "image" or cmd == "picture":
                             self.comms.send_text_and_photos("Here's photos of the coop. ", request_num)
                         elif cmd == "close":
-                            self.comms.send_text(self.door.close_door(), request_num)
+                            self.comms.send_text(self.door.close_door_manual(), request_num)
                         elif cmd == "open":
-                            self.comms.send_text(self.door.open_door(), request_num)
+                            self.comms.send_text(self.door.open_door_manual(), request_num)
                         elif cmd == "status" or cmd == "report":
                             self.send_report_and_photos(request_num)
                         elif cmd == "door":

@@ -73,32 +73,32 @@ class Light(object):
         if DEBUG: print("DEBUG: sunset", ss)
         if DEBUG: print("DEBUG: close door", cd)
         if self.is_dark(dt):
-            text = f"It is dark now in {self.location}. The doors should be closed. "
+            text = f"It is dark now in {self.location}. "
         else:
-            text = f"It is daylight now in {self.location}. The doors should be open. "
+            text = f"It is daylight now in {self.location}. "
         # sunrise hasn't happened yet
         if now < sr:
             text += f"The sun will rise at {sr.strftime(TIME_FORMAT)}"
             if sr == od:
-                 text += " when the doors will open. "
+                 text += " and it should be light enough to open the doors. "
             else:
-                text += f" and the doors will open at {od.strftime(TIME_FORMAT)}. "
+                text += f" and it will be light enough to open the doors at {od.strftime(TIME_FORMAT)}. "
         # sunset has not yet happened
         elif now < ss:
-            text += f"The sun will set at {ss.strftime(TIME_FORMAT)}"
+            text += f"The sun rose at {sr.strftime(TIME_FORMAT)} and will set at {ss.strftime(TIME_FORMAT)}"
             if ss == cd:
-                 text += " when the doors will close. "
+                 text += " and it should be dark enough to close the doors. "
             else:
-                text += f" and the doors will close at {cd.strftime(TIME_FORMAT)}. "
+                text += f" and it will be dark enough to close the doors at {cd.strftime(TIME_FORMAT)}. "
         # sunset already happened
         else:
             text += f"The sun set at {ss.strftime(TIME_FORMAT)}"
             if ss == cd:
-                 text += " and the doors closed. "
+                 text += " and it should be dark enough to close the doors. "
             elif now < cd:
-                text += f" and the doors will close at {cd.strftime(TIME_FORMAT)}. "
+                text += f" and it will be dark enough to close the doors at {cd.strftime(TIME_FORMAT)}. "
             else:
-                text += f" and the doors closed at {cd.strftime(TIME_FORMAT)}. "
+                text += f" and it was dark enough to close the doors at {cd.strftime(TIME_FORMAT)}. "
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             srt = self.sunrise(tomorrow)
             text += f"Tomorrow's sunrise is at {srt.strftime(TIME_FORMAT)}. "

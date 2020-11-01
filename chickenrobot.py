@@ -44,38 +44,46 @@ class Chickenrobot(object):
         # issue reports on start
         # self.send_report_and_photos()
         while(1):
+            #
+            # Should the door be closed?
+            #
             if self.light.is_dark() and self.door.is_open():
                 result = self.door.close_door_auto()
                 if result:
                     print("Door status:", result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
+            #
+            # Should the door be open?
+            #
             elif self.light.is_light() and self.door.is_closed():
                 result = self.door.open_door_auto()
                 if result:
                     print("Door status:", result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
-            else:
-                command_list = self.comms.check_for_commands()
-                # print("command list:", command_list)
-                if command_list:
-                    for request_num, cmd in command_list:
-                        if cmd == "photo" or cmd == "image" or cmd == "picture":
-                            self.comms.send_text_and_photos("Here's photos of the coop. ", request_num)
-                        elif cmd == "close":
-                            self.comms.send_text(self.door.close_door_manual(), request_num)
-                        elif cmd == "open":
-                            self.comms.send_text(self.door.open_door_manual(), request_num)
-                        elif cmd == "status" or cmd == "report":
-                            self.send_report_and_photos(request_num)
-                        elif cmd == "door":
-                            self.comms.send_text(self.door.report(), request_num)
-                        elif cmd == "sunrise" or cmd == "sunset" or cmd == "light":
-                            self.comms.send_text(self.light.report(), request_num)
-                        else:
-                            txt = "Hi! I'm on duty. Helpful commands are status, photo, open, close, door, sunset, sunrise."
-                            self.comms.send_text(txt, request_num)
+            #
+            # Check for messages
+            # 
+            command_list = self.comms.check_for_commands()
+            # print("command list:", command_list)
+            if command_list:
+                for request_num, cmd in command_list:
+                    if cmd == "photo" or cmd == "image" or cmd == "picture":
+                        self.comms.send_text_and_photos("Here's photos of the coop. ", request_num)
+                    elif cmd == "close":
+                        self.comms.send_text(self.door.close_door_manual(), request_num)
+                    elif cmd == "open":
+                        self.comms.send_text(self.door.open_door_manual(), request_num)
+                    elif cmd == "status" or cmd == "report":
+                        self.send_report_and_photos(request_num)
+                    elif cmd == "door":
+                        self.comms.send_text(self.door.report(), request_num)
+                    elif cmd == "sunrise" or cmd == "sunset" or cmd == "light":
+                        self.comms.send_text(self.light.report(), request_num)
+                    else:
+                        txt = "Hi! I'm on duty. Helpful commands are status, photo, open, close, door, sunset, sunrise."
+                        self.comms.send_text(txt, request_num)
             sleep(5)
                 # print('.')
 

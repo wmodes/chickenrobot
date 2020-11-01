@@ -89,7 +89,7 @@ class Chickenrobot(object):
                         self.comms.send_text(self.door.report(), request_num)
                     elif cmd == "sunrise" or cmd == "sunset" or cmd == "light":
                         self.comms.send_text(self.light.report(), request_num)
-                    else:
+                    elif cmd == "help"
                         txt = "Hi! I'm on duty. Helpful commands are status, photo, open, close, door, sunset, sunrise."
                         self.comms.send_text(txt, request_num)
             sleep(5)

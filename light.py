@@ -98,7 +98,7 @@ class Light(object):
             elif now < cd:
                 text += f" and the doors will close at {cd.strftime(TIME_FORMAT)}. "
             else:
-                text += f" and the doors closed at {cd.strptime(TIME_FORMAT)}. "
+                text += f" and the doors closed at {cd.strftime(TIME_FORMAT)}. "
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             srt = self.sunrise(tomorrow)
             text += f"Tomorrow's sunrise is at {srt.strftime(TIME_FORMAT)}. "

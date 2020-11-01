@@ -9,17 +9,14 @@ SFTP_IMAGE_DIR = '/lamp0/web/vhosts/modes.io/htdocs/interactive/chickenrobot/ima
 SFTP_LOG = 'tmp/pysftp.log'
 SFTP_PASSWORD = os.environ['SFTP_PASSWORD']
 
-try:
-    with pysftp.Connection(host=SFTP_SERVER,
-                           username=SFTP_USER,
-                           password=SFTP_PASSWORD,
-                           log=SFTP_LOG) as sftp:
-        with sftp.cd(SFTP_IMAGE_DIR):
-            sftp.put('images/image0.jpg')
-            sftp.put('images/image1.jpg')
-        # sftp.put_d('images', SFTP_IMAGE_DIR)
-except:
-    pass
+with pysftp.Connection(host=SFTP_SERVER,
+                       username=SFTP_USER,
+                       password=SFTP_PASSWORD,
+                       log=SFTP_LOG) as sftp:
+    with sftp.cd(SFTP_IMAGE_DIR):
+        sftp.put('images/image0.jpg')
+        sftp.put('images/image1.jpg')
+    # sftp.put_d('images', SFTP_IMAGE_DIR)
 
 print("Uploaded!")
 

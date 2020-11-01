@@ -16,9 +16,9 @@ sun = Sun(latitude, longitude)
 
 # Get today's sunrise and sunset in UTC
 today_sr_utc = sun.get_sunrise_time()
-today_sr_local = today_sr_utc.astimezone(to_zone)
+today_sr_local = sun.get_local_sunrise_time()
 today_ss_utc = sun.get_sunset_time()
-today_ss_local = today_ss_utc.astimezone(to_zone)
+today_ss_local = sun.get_local_sunset_time()
 
 print('Today at {} the sun rose at {} and goes down at {} UTC'.
       format(city_name, today_sr_utc.strftime('%H:%M'), today_ss_utc.strftime('%H:%M')))

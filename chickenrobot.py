@@ -47,8 +47,12 @@ class Chickenrobot(object):
             #
             # Should the door be closed?
             #
-            if self.light.is_dark() and self.door.is_open():
+            # Note: We don't test here if door is already closed
+            # (door.is_closed()), because though it may take no action
+            # with the doors, it might have to reset AUTO/MANUAL mode
+            if self.light.is_dark():
                 result = self.door.close_door_auto()
+                # It will only return something if it moved the doors
                 if result:
                     print("Door status:", result)
                     # self.comms.send_text(result)
@@ -56,15 +60,19 @@ class Chickenrobot(object):
             #
             # Should the door be open?
             #
-            elif self.light.is_light() and self.door.is_closed():
+            # Note: We don't test here if door is already open
+            # (door.is_open()), because though it may take no action
+            # with the doors, it might have to reset AUTO/MANUAL mode
+            elif self.light.is_light():
                 result = self.door.open_door_auto()
+                # It will only return something if it moved the doors
                 if result:
                     print("Door status:", result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
             #
             # Check for messages
-            # 
+            #
             command_list = self.comms.check_for_commands()
             # print("command list:", command_list)
             if command_list:

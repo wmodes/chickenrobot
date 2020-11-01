@@ -68,32 +68,44 @@ class Door(object):
         self._store_door_state()
 
     def open_door_auto(self):
+        # if we are in auto mode
         if self.mode == AUTO:
             if self.status == OPEN:
-                return "The doors are already open. "
+                # The doors are already open
+                return None
             else:
                 self._move_door(OPEN)
                 return "I just opened the doors. "
+        # if we are in MANUAL mode
         else:
+            # if the doors are OPEN
             if self.status == OPEN:
                 # return to AUTO mode
                 self.mode = AUTO
-                return "The doors are already open. Resuming AUTOMATIC mode. "
+                # The doors are already open
+                return None
+            # if the doors are CLOSED
             else:
                 # manual mode overrides auto - doors stay closed
                 return None
 
     def close_door_auto(self):
+        # if we are in auto mode
         if self.mode == AUTO:
             if self.status == CLOSED:
-                return "The doors are already closed. "
+                # The doors are already closed
+                return None
             else:
                 self._move_door(CLOSED)
                 return "I just closed the doors. "
+        # if we are in MANUAL mode
         else:
+            # if the doors are OPEN
             if self.status == CLOSED:
                 self.mode = AUTO
-                return "The doors are already closed. Resuming AUTOMATIC mode. "
+                # The doors are already closed
+                return None
+            # if the doors are CLOSED
             else:
                 # manual mode overrides auto - doors stay open
                 return None
@@ -121,6 +133,12 @@ class Door(object):
             return "I just closed the doors. "
 
     def is_open(self):
+        return self.status == OPEN
+
+    def is_closed(self):
+        return self.status == CLOSED
+
+    def is_open_and_auto(self):
         return self.status == OPEN
 
     def is_closed(self):

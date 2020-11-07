@@ -14,6 +14,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 import os.path
 from settings import *
+import logging
 
 # Directions
 CCW = 0    # Anti-clockwise rotation
@@ -38,8 +39,9 @@ class Door(object):
         self._read_door_state()
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(DIR, GPIO.OUT)
-        GPIO.setup(STEP, GPIO.OUT)
+        GPIO.setup(DIR_PIN, GPIO.OUT)
+        GPIO.setup(STEP_PIN, GPIO.OUT)
+        GPIO.setup(INDICATOR_PIN, GPIO.OUT)
 
     def _store_door_state(self):
         with open(DOOR_STATE_FILE, 'w') as file:
@@ -57,24 +59,33 @@ class Door(object):
             self.status = CLOSED
             self._store_door_state()
 
-    def _move_door(self, direction):
-        GPIO.output(DIR, direction)
+    def _set_indicator(self, state):
+        GPIO.output(INDICATOR_PIN, state)
+
+    def _move_door(self, state):
+        GPIO.output(DIR_PIN, state)
         for x in range(self.revs * STEP_COUNT):
-            GPIO.output(STEP, GPIO.HIGH)
+            GPIO.output(STEP_PIN, GPIO.HIGH)
             sleep(STEP_DELAY)
-            GPIO.output(STEP, GPIO.LOW)
+            GPIO.output(STEP_PIN, GPIO.LOW)
             sleep(STEP_DELAY)
-        self.status = direction
+        # set indicator light
+        self._set_indicator(state)
+        # record status
+        self.status = state
         self._store_door_state()
 
     def open_door_auto(self):
+        logging.info("Doors: Open request received (AUTO)")
         # if we are in auto mode
         if self.mode == AUTO:
             if self.status == OPEN:
                 # The doors are already open
+                logging.info("Doors: doors are already open (AUTO)")
                 return None
             else:
                 self._move_door(OPEN)
+                logging.info("Doors: opened the doors (AUTO)")
                 return "I just opened the doors. "
         # if we are in MANUAL mode
         else:
@@ -83,20 +94,25 @@ class Door(object):
                 # return to AUTO mode
                 self.mode = AUTO
                 # The doors are already open
+                logging.info("Doors: switch to AUTO mode; already open")
                 return None
             # if the doors are CLOSED
             else:
                 # manual mode overrides auto - doors stay closed
+                logging.info("Doors: remain in MANUAL mode; stay closed")
                 return None
 
     def close_door_auto(self):
+        logging.info("Doors: Close request received (AUTO)")
         # if we are in auto mode
         if self.mode == AUTO:
             if self.status == CLOSED:
                 # The doors are already closed
+                logging.info("Doors: already closed (AUTO)")
                 return None
             else:
                 self._move_door(CLOSED)
+                logging.info("Doors: opened the doors (AUTO)")
                 return "I just closed the doors. "
         # if we are in MANUAL mode
         else:
@@ -111,25 +127,31 @@ class Door(object):
                 return None
 
     def open_door_manual(self):
+        logging.info("Doors: Open request received (MANUAL)")
         if self.status == OPEN:
             # switch to auto mode, so door will auto close at sunset
             self.mode = AUTO
+            logging.info("Doors: already open (MANUAL)")
             return "The doors are already open. "
         else:
             # switch to manual mode, so auto will not override door
             self.mode = MANUAL
             self._move_door(OPEN)
+            logging.info("Doors: opened the doors (MANUAL)")
             return "I just opened the doors. "
 
     def close_door_manual(self):
+        logging.info("Doors: Close request received (MANUAL)")
         if self.status == CLOSED:
             # switch to auto mode, so door will auto open at sunrise
             self.mode = AUTO
+            logging.info("Doors: already closed (MANUAL)")
             return "The doors are already closed. "
         else:
             # switch to manual mode, so auto will not override door
             self.mode = MANUAL
             self._move_door(CLOSED)
+            logging.info("Doors: closed the doors (MANUAL)")
             return "I just closed the doors. "
 
     def is_open(self):
@@ -147,31 +169,39 @@ class Door(object):
     def report(self):
         if self.status == CLOSED:
             # log "Door status: The door is currently CLOSED"
-            txt = "The doors are currently CLOSED "
+            text = "The doors are currently CLOSED "
             if (self.mode == AUTO):
-                txt += "in AUTOMATIC mode. "
+                text += "in AUTOMATIC mode. "
             else:
-                txt += "in MANUAL mode (AUTOMATIC resumes at sunrise). "
+                text += "in MANUAL mode (AUTOMATIC resumes at sunrise). "
         else:
             # log "Door status: The door is currently OPEN"
-            txt = "The doors are currently OPEN "
+            text = "The doors are currently OPEN "
             if (self.mode == AUTO):
-                txt += "in AUTOMATIC mode. "
+                text += "in AUTOMATIC mode. "
             else:
-                txt += "in MANUAL mode (AUTOMATIC resumes at sunset). "
-        return txt
+                text += "in MANUAL mode (AUTOMATIC resumes at sunset). "
+        logging.info("Report: " + text)
+        return text
 
 def main():
-    print ("Platform:", sys.platform)
+    import sys
+    logging.basicConfig(
+        filename=sys.stderr,
+        encoding='utf-8',
+        format='%(asctime)s %(levelname)s:%(message)s',
+        level=logging.DEBUG
+    )
+    logging.info("Platform:" + sys.platform)
     revs = 10
 
     door = Door(revs)
     door.open_door_manual()
-    print(door.report())
+    logging.info(door.report())
 
     sleep(1)
     door.close_door_manual()
-    print(door.report())
+    logging.info(door.report())
 
 if __name__ == '__main__':
     main()

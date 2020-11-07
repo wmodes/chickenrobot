@@ -8,13 +8,11 @@ from suntime import Sun, SunTimeException
 from datetime import datetime, timedelta
 from dateutil import tz
 from settings import *
+import logging
 
 # Auto-detect timezones
 from_zone = tz.tzutc()
 to_zone = tz.tzlocal()
-
-# DEBUG = True
-DEBUG = False
 
 class Light(object):
     """reports sunrise and sunset times"""
@@ -67,11 +65,11 @@ class Light(object):
         cd = self.close_door(dt)
         now = datetime.now().astimezone(to_zone)
         if dt: now = dt
-        if DEBUG: print("DEBUG: now", now)
-        if DEBUG: print("DEBUG: sunrise", sr)
-        if DEBUG: print("DEBUG: open door", od)
-        if DEBUG: print("DEBUG: sunset", ss)
-        if DEBUG: print("DEBUG: close door", cd)
+        logging.debug("Light:now:" + now.strftime(TIME_FORMAT))
+        logging.debug("Light:sunrise:" + sr.strftime(TIME_FORMAT))
+        logging.debug("Light:open door:" + od.strftime(TIME_FORMAT))
+        logging.debug("Light:sunset:" + ss.strftime(TIME_FORMAT))
+        logging.debug("Light:close door:" + cd.strftime(TIME_FORMAT))
         if self.is_dark(dt):
             text = f"It is dark now in {self.location}. "
         else:
@@ -102,10 +100,19 @@ class Light(object):
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             srt = self.sunrise(tomorrow)
             text += f"Tomorrow's sunrise is at {srt.strftime(TIME_FORMAT)}. "
+        logging.info("Report: " + text)
         return text
 
 
 def main():
+    import sys
+    logging.basicConfig(
+        filename=sys.stderr,
+        encoding='utf-8',
+        format='%(asctime)s %(levelname)s:%(message)s',
+        level=logging.DEBUG
+    )
+
     # Felton, CA 37.0513° N, 122.0733° W
     city_name = "Felton, CA"
     latitude = 37.0513
@@ -115,7 +122,7 @@ def main():
 
     light = Light(city_name, latitude, longitude, sunrise_delay, sunset_delay)
     # now = datetime.now().astimezone(to_zone) + timedelta(hours=10)
-    print(light.report())
+    logging.info(light.report())
 
 if __name__ == '__main__':
     main()

@@ -30,10 +30,15 @@ SFTP_IMAGE_DIR = '/lamp0/web/vhosts/modes.io/htdocs/interactive/chickenrobot/ima
 SFTP_LOG = 'tmp/pysftp.log'
 SFTP_PASSWORD = os.environ['SFTP_PASSWORD']
 
+# GPIO Configs
+# 
+DIR_PIN = 20            # Direction GPIO pin
+STEP_PIN = 21           # Step GPIO pin
+CAMLIGHT_PIN = 23       # Activate camlight GPIO pin
+INDICATOR_PIN = 24      # Activate indicator GPIO pin
+
 # Door class
 #
-DIR = 20            # Direction GPIO pin
-STEP = 21           # Step GPIO pin
 SPR = 200           # Steps per revolution (360/1.8) from stepper datasheet
 REVS = 10           # number of revolutions to bring door up or lower it down
 DOOR_STATE_FILE = "door.state"

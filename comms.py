@@ -6,6 +6,7 @@
 import random
 from twilio.rest import Client
 from settings import *
+import logging
 
 # CONSTANTS
 
@@ -57,7 +58,8 @@ class Comms(object):
             my_target_nums = self.target_nums
         msg_text = MSG_PREFIX + msg_text + "\n" + self.random_signoff()
         for number in my_target_nums:
-            print("Comms: Sending message to:", number)
+            logging.info("Comms: Sending message to:" + number)
+            # TODO: Handle exceptions
             message = self.client.messages.create(
                 body = msg_text,
                 from_ = self.origin_num,
@@ -74,7 +76,8 @@ class Comms(object):
         for num in range(NUM_CAMS):
             image_array.append(IMAGE_URL_BASE + str(num) + BASE_URL_POSTFIX)
         for number in my_target_nums:
-            print("Comms: Sending message to:", number)
+            logging.info("Comms: Sending photos to:" + number)
+            # TODO: Handle exceptions
             message = self.client.messages.create(
                 body = msg_text,
                 from_ = self.origin_num,
@@ -87,6 +90,7 @@ class Comms(object):
         #
         # ref: https://www.twilio.com/docs/sms/tutorials/how-to-retrieve-and-modify-message-history-python
         #
+        # TODO: Handle exceptions
         messages = self.client.messages.list(to=ORIGIN_NUM,limit=20)
         if not messages:
             return None
@@ -95,7 +99,8 @@ class Comms(object):
             # check if on list of recipients
             if msg.from_ not in TARGET_NUMS:
                 # no, kill it
-                print("Comms: Deleting msg from", msg.from_, "Body:", msg.body)
+                logging.debug("Comms: Deleting msg from", msg.from_, "Body:", msg.body)
+                # TODO: Handle exceptions
                 self.client.messages(msg.sid).delete()
                 continue
             # act on command
@@ -105,13 +110,22 @@ class Comms(object):
                     cmd = keyword
                     break
             command_list.append((msg.from_, cmd))
-            print("Comms: Message received: From:", msg.from_, "Command:", cmd)
+            logging.info("Comms: Message received: From:" + msg.from_ + "Command:" + cmd)
+            # TODO: Delete command ONLY after succeess handling it?
             # delete message
+            # TODO: Handle exceptions
             self.client.messages(msg.sid).delete()
         return command_list
 
 
 def main():
+    import sys
+    logging.basicConfig(
+        filename=sys.stderr,
+        encoding='utf-8',
+        format='%(asctime)s %(levelname)s:%(message)s',
+        level=logging.DEBUG
+    )
     comms = Comms(ORIGIN_NUM, TARGET_NUMS)
     # comms.send_text("Integrating classes")
     comms.send_text_and_photos("Here's some photos")

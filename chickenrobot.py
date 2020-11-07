@@ -8,8 +8,8 @@ from light import Light
 from door import Door
 from camera import Camera
 from settings import *
-
 from time import sleep
+import logging
 
 # General psuedocode
 #
@@ -54,7 +54,7 @@ class Chickenrobot(object):
                 result = self.door.close_door_auto()
                 # It will only return something if it moved the doors
                 if result:
-                    print("Door status:", result)
+                    logging.info("Door status:" + result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
             #
@@ -67,7 +67,7 @@ class Chickenrobot(object):
                 result = self.door.open_door_auto()
                 # It will only return something if it moved the doors
                 if result:
-                    print("Door status:", result)
+                    logging.info("Door status:" + result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
             #
@@ -112,12 +112,26 @@ class Chickenrobot(object):
         self.comms.send_text_and_photos("Here's photos of the coop. ", passed_num)
 
 def main():
+    logging.basicConfig(
+        filename='chickenrobot.log',
+        # encoding='utf-8',
+        filemode='w',
+        format='%(asctime)s %(levelname)s:%(message)s',
+        level=logging.DEBUG
+    )
+    # logging.debug('This message should go to the log file')
+    # logging.info('So should this')
+    # logging.warning('And this, too')
+    # logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
+    logging.info("Starting")
+
     # nuthin here yet
     chickenrobot = Chickenrobot()
     try:
         chickenrobot.on_duty()
     except KeyboardInterrupt:
-        print("\n\nChicken Robot: I'm off duty.")
+        logging.info("I'm off duty.")
+        logging.info("Finishing")
 
 if __name__ == '__main__':
     main()

@@ -3,13 +3,24 @@
 # date: Oct 2020
 # license: MIT
 
+import sys
+if sys.platform == "darwin":
+    # OS X
+    import fake_rpi
+    sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
+    sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+    # sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
+import RPi.GPIO as GPIO
 import cv2 as cv
 import os
+from time import sleep
 import pysftp
 from settings import *
+import logging
 
 # CONSTANTS
-DEBUG = False
+LIGHT_OFF = 0
+LIGHT_ON = 1
 
 # NOTE: max resolution of the hbv-1615 is 1280x1024
 # If you switch to another cam, you may have to adjust this
@@ -25,6 +36,7 @@ class Camera(object):
         self.image_array = []
         self._find_cams()
         self._setup_cams()
+        GPIO.setup(CAMLIGHT_PIN, GPIO.OUT)
 
     def _find_cams(self):
         """find usb cams"""
@@ -32,16 +44,17 @@ class Camera(object):
         for cam_num in range(MAX_CAMS):
             cam = cv.VideoCapture(cam_num)
             if cam is None or not cam.isOpened():
-                if DEBUG: print("DEBUG: Camera: camera", cam_num, "not found")
+                logging.debug("Camera: camera" + str(cam_num) + "not found")
                 pass
             else:
                 self.cam_array.append(cam)
-                if DEBUG: print("DEBUG: Camera: camera", cam_num, "found")
+                logging.debug("Camera: camera" + str(cam_num) + "found")
         self.num_cams = len(self.cam_array)
 
     def _setup_cams(self):
         """configure cams"""
         for cam in self.cam_array:
+            # TODO: Handle exceptions
             cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
             cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
 
@@ -53,7 +66,12 @@ class Camera(object):
 
     def _take_image(self, cam_num):
         # capture image
+        # TODO: Handle exceptions
+        GPIO.output(CAMLIGHT_PIN, LIGHT_ON)
+        sleep(500)
         s, im = self.cam_array[cam_num].read()
+        sleep(500)
+        GPIO.output(CAMLIGHT_PIN, LIGHT_OFF)
         return(im)
 
     def take_all_images(self):
@@ -67,12 +85,13 @@ class Camera(object):
     def write_images(self):
         for image_num in range(self.num_cams):
             filename = IMAGE_DIR + "image" + str(image_num) + ".jpg"
-            if DEBUG: print("DEBUG: camera: filename:", filename)
+            logging.debug("Camera: image filename:", filename)
             cv.imwrite(filename, self.image_array[image_num])
 
     def upload_images(self):
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
+        # TODO: Handle exceptions
         with pysftp.Connection(host=SFTP_SERVER,
                                username=SFTP_USER,
                                password=SFTP_PASSWORD,
@@ -99,11 +118,18 @@ class Camera(object):
             text = "I have one camera watching. "
         else:
             text = f"I have {self.num_cams} cameras watching. "
+        logging.info("Report: " + text)
         return text
 
 
 def main():
     import sys
+    logging.basicConfig(
+        filename=sys.stderr,
+        encoding='utf-8',
+        format='%(asctime)s %(levelname)s:%(message)s',
+        level=logging.DEBUG
+    )
 
     if sys.platform != "darwin":
         MAX_HORZ = 1280
@@ -113,7 +139,7 @@ def main():
         MAX_VERT = 1080
 
     camera = Camera(MAX_HORZ, MAX_VERT)
-    print(camera.report())
+    logging.info(camera.report())
     camera.take_and_upload_images()
 
 if __name__ == '__main__':

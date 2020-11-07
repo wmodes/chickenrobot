@@ -113,12 +113,13 @@ class Chickenrobot(object):
 
 def main():
     logging.basicConfig(
-        filename='chickenrobot.log',
+        filename=LOG_FILENAME,
         # encoding='utf-8',
         filemode='w',
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG
     )
+    logger = logging.getLogger()
     # logging.debug('This message should go to the log file')
     # logging.info('So should this')
     # logging.warning('And this, too')

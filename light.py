@@ -65,11 +65,11 @@ class Light(object):
         cd = self.close_door(dt)
         now = datetime.now().astimezone(to_zone)
         if dt: now = dt
-        logging.debug("Light:now:" + now.strftime(TIME_FORMAT))
-        logging.debug("Light:sunrise:" + sr.strftime(TIME_FORMAT))
-        logging.debug("Light:open door:" + od.strftime(TIME_FORMAT))
-        logging.debug("Light:sunset:" + ss.strftime(TIME_FORMAT))
-        logging.debug("Light:close door:" + cd.strftime(TIME_FORMAT))
+        logging.debug("Light:Now:" + now.strftime(TIME_FORMAT))
+        logging.debug("Light:Sunrise:" + sr.strftime(TIME_FORMAT))
+        logging.debug("Light:Open door:" + od.strftime(TIME_FORMAT))
+        logging.debug("Light:Sunset:" + ss.strftime(TIME_FORMAT))
+        logging.debug("Light:Close door:" + cd.strftime(TIME_FORMAT))
         if self.is_dark(dt):
             text = f"It is dark now in {self.location}. "
         else:
@@ -100,7 +100,7 @@ class Light(object):
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             srt = self.sunrise(tomorrow)
             text += f"Tomorrow's sunrise is at {srt.strftime(TIME_FORMAT)}. "
-        logging.info("Report: " + text)
+        logging.info("Report:" + text)
         return text
 
 
@@ -112,6 +112,7 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG
     )
+    logger = logging.getLogger()
 
     # Felton, CA 37.0513° N, 122.0733° W
     city_name = "Felton, CA"

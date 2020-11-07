@@ -25,6 +25,8 @@ COMMANDS = [
     "light"
 ]
 
+logger = logging.getLogger()
+
 class Comms(object):
     """Takes care of all outward communications"""
 
@@ -58,7 +60,7 @@ class Comms(object):
             my_target_nums = self.target_nums
         msg_text = MSG_PREFIX + msg_text + "\n" + self.random_signoff()
         for number in my_target_nums:
-            logging.info("Comms: Sending message to:" + number)
+            logging.info("Comms:Sending message to:" + number)
             # TODO: Handle exceptions
             message = self.client.messages.create(
                 body = msg_text,
@@ -76,7 +78,7 @@ class Comms(object):
         for num in range(NUM_CAMS):
             image_array.append(IMAGE_URL_BASE + str(num) + BASE_URL_POSTFIX)
         for number in my_target_nums:
-            logging.info("Comms: Sending photos to:" + number)
+            logging.info("Comms:Sending photos to:" + number)
             # TODO: Handle exceptions
             message = self.client.messages.create(
                 body = msg_text,
@@ -87,11 +89,19 @@ class Comms(object):
 
     def check_for_commands(self):
         """check for commands via sms and respond"""
-        #
         # ref: https://www.twilio.com/docs/sms/tutorials/how-to-retrieve-and-modify-message-history-python
         #
+        # dial down loggging while we are in the twillio API
+        # if we are not set to DEBUG level
+        current_level = logger.level
+        if (current_level < logging.DEBUG):
+            logger.setLevel(logging.WARNING)
+        # We fetch the list from the Twilio API
+        # (and reverse it since it comes most recent first)
         # TODO: Handle exceptions
-        messages = self.client.messages.list(to=ORIGIN_NUM,limit=20)
+        messages = self.client.messages.list(to=ORIGIN_NUM,limit=10).reverse()
+        # restore loggging
+        logger.setLevel(current_level)
         if not messages:
             return None
         command_list = []
@@ -99,7 +109,7 @@ class Comms(object):
             # check if on list of recipients
             if msg.from_ not in TARGET_NUMS:
                 # no, kill it
-                logging.debug("Comms: Deleting msg from", msg.from_, "Body:", msg.body)
+                logging.debug("Comms:Deleting msg from number not in sub list from" + msg.from_ + "Body:" + msg.body)
                 # TODO: Handle exceptions
                 self.client.messages(msg.sid).delete()
                 continue
@@ -110,10 +120,11 @@ class Comms(object):
                     cmd = keyword
                     break
             command_list.append((msg.from_, cmd))
-            logging.info("Comms: Message received: From:" + msg.from_ + "Command:" + cmd)
+            logging.info("Comms:Message received: From:" + msg.from_ + "Command:" + cmd)
             # TODO: Delete command ONLY after succeess handling it?
             # delete message
             # TODO: Handle exceptions
+            logging.debug("Comms:Deleting handled message")
             self.client.messages(msg.sid).delete()
         return command_list
 
@@ -126,6 +137,7 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG
     )
+    logger = logging.getLogger()
     comms = Comms(ORIGIN_NUM, TARGET_NUMS)
     # comms.send_text("Integrating classes")
     comms.send_text_and_photos("Here's some photos")

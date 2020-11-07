@@ -44,11 +44,11 @@ class Camera(object):
         for cam_num in range(MAX_CAMS):
             cam = cv.VideoCapture(cam_num)
             if cam is None or not cam.isOpened():
-                logging.debug("Camera: camera" + str(cam_num) + "not found")
+                logging.debug("Camera:Camera " + str(cam_num) + " not found")
                 pass
             else:
                 self.cam_array.append(cam)
-                logging.debug("Camera: camera" + str(cam_num) + "found")
+                logging.debug("Camera:Camera " + str(cam_num) + " found")
         self.num_cams = len(self.cam_array)
 
     def _setup_cams(self):
@@ -85,7 +85,7 @@ class Camera(object):
     def write_images(self):
         for image_num in range(self.num_cams):
             filename = IMAGE_DIR + "image" + str(image_num) + ".jpg"
-            logging.debug("Camera: image filename:", filename)
+            logging.debug("Camera:Image filename:" + filename)
             cv.imwrite(filename, self.image_array[image_num])
 
     def upload_images(self):
@@ -118,7 +118,7 @@ class Camera(object):
             text = "I have one camera watching. "
         else:
             text = f"I have {self.num_cams} cameras watching. "
-        logging.info("Report: " + text)
+        logging.info("Report:" + text)
         return text
 
 
@@ -130,6 +130,7 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG
     )
+    logger = logging.getLogger()
 
     if sys.platform != "darwin":
         MAX_HORZ = 1280

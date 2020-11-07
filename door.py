@@ -76,16 +76,16 @@ class Door(object):
         self._store_door_state()
 
     def open_door_auto(self):
-        logging.info("Doors: Open request received (AUTO)")
+        logging.info("Doors:Open request received (AUTO)")
         # if we are in auto mode
         if self.mode == AUTO:
             if self.status == OPEN:
                 # The doors are already open
-                logging.info("Doors: doors are already open (AUTO)")
+                # logging.info("Doors:Doors are already open (AUTO)")
                 return None
             else:
                 self._move_door(OPEN)
-                logging.info("Doors: opened the doors (AUTO)")
+                logging.info("Doors:Opened the doors (AUTO)")
                 return "I just opened the doors. "
         # if we are in MANUAL mode
         else:
@@ -94,25 +94,25 @@ class Door(object):
                 # return to AUTO mode
                 self.mode = AUTO
                 # The doors are already open
-                logging.info("Doors: switch to AUTO mode; already open")
+                logging.info("Doors:Switch to AUTO mode; already open")
                 return None
             # if the doors are CLOSED
             else:
                 # manual mode overrides auto - doors stay closed
-                logging.info("Doors: remain in MANUAL mode; stay closed")
+                logging.info("Doors:Remain in MANUAL mode; stay closed")
                 return None
 
     def close_door_auto(self):
-        logging.info("Doors: Close request received (AUTO)")
+        logging.info("Doors:Close request received (AUTO)")
         # if we are in auto mode
         if self.mode == AUTO:
             if self.status == CLOSED:
                 # The doors are already closed
-                logging.info("Doors: already closed (AUTO)")
+                # logging.info("Doors:Already closed (AUTO)")
                 return None
             else:
                 self._move_door(CLOSED)
-                logging.info("Doors: opened the doors (AUTO)")
+                logging.info("Doors:Opened the doors (AUTO)")
                 return "I just closed the doors. "
         # if we are in MANUAL mode
         else:
@@ -127,31 +127,31 @@ class Door(object):
                 return None
 
     def open_door_manual(self):
-        logging.info("Doors: Open request received (MANUAL)")
+        logging.info("Doors:Open request received (MANUAL)")
         if self.status == OPEN:
             # switch to auto mode, so door will auto close at sunset
             self.mode = AUTO
-            logging.info("Doors: already open (MANUAL)")
+            logging.info("Doors:Already open (MANUAL)")
             return "The doors are already open. "
         else:
             # switch to manual mode, so auto will not override door
             self.mode = MANUAL
             self._move_door(OPEN)
-            logging.info("Doors: opened the doors (MANUAL)")
+            logging.info("Doors:Opened the doors (MANUAL)")
             return "I just opened the doors. "
 
     def close_door_manual(self):
-        logging.info("Doors: Close request received (MANUAL)")
+        logging.info("Doors:Close request received (MANUAL)")
         if self.status == CLOSED:
             # switch to auto mode, so door will auto open at sunrise
             self.mode = AUTO
-            logging.info("Doors: already closed (MANUAL)")
+            logging.info("Doors:Already closed (MANUAL)")
             return "The doors are already closed. "
         else:
             # switch to manual mode, so auto will not override door
             self.mode = MANUAL
             self._move_door(CLOSED)
-            logging.info("Doors: closed the doors (MANUAL)")
+            logging.info("Doors:Closed the doors (MANUAL)")
             return "I just closed the doors. "
 
     def is_open(self):
@@ -181,7 +181,7 @@ class Door(object):
                 text += "in AUTOMATIC mode. "
             else:
                 text += "in MANUAL mode (AUTOMATIC resumes at sunset). "
-        logging.info("Report: " + text)
+        logging.info("Report:" + text)
         return text
 
 def main():
@@ -192,6 +192,7 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG
     )
+    logger = logging.getLogger()
     logging.info("Platform:" + sys.platform)
     revs = 10
 

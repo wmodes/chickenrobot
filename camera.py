@@ -108,6 +108,12 @@ class Camera(object):
                                    log=config.SFTP_LOG,
                                    cnopts=cnopts) as sftp:
                 with sftp.cd(config.SFTP_IMAGE_DIR):
+                    # delete existing files
+                    logging.debug("Camera:deleting old files via sftp")
+                    for file in sftp.listdir():
+                        sftp.remove(file)
+                    # upload files
+                    logging.debug("Camera:Uploading files via sftp")
                     for filename in filename_array:
                         sftp.put(filename)
         except:

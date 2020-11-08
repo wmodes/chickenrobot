@@ -3,12 +3,12 @@
 # date: Oct 2020
 # license: MIT
 
-import os
+import os, sys
 from dotenv import load_dotenv
 load_dotenv()
 
 # Chickenrobot class
-LOG_FILENAME = "cr.log"
+LOG_FILENAME = "logs/cr.log"
 
 # Light class
 #
@@ -22,23 +22,27 @@ TIME_FORMAT = '%-I:%M%p'
 
 # Camera class
 #
-MAX_HORZ = 1280
-MAX_VERT = 1024
+if sys.platform == "darwin":
+    MAX_HORZ = 1920
+    MAX_VERT = 1080
+else:
+    MAX_HORZ = 1280
+    MAX_VERT = 1024
 MAX_CAMS = 4
-NUM_CAMS = 2
+ACTIVE_CAMS = 0
 IMAGE_DIR = "images/"
 SFTP_SERVER = 'sftp.sd5.gpaas.net'
 SFTP_USER = '41496'
 SFTP_IMAGE_DIR = '/lamp0/web/vhosts/modes.io/htdocs/interactive/chickenrobot/images'
-SFTP_LOG = 'tmp/pysftp.log'
+SFTP_LOG = 'logs/sftp.log'
 SFTP_PASSWORD = os.environ['SFTP_PASSWORD']
 
 # GPIO Configs
 #
 DIR_PIN = 20            # Direction GPIO pin
 STEP_PIN = 21           # Step GPIO pin
-CAMLIGHT_PIN = 23       # Activate camlight GPIO pin
-INDICATOR_PIN = 24      # Activate indicator GPIO pin
+CAMLIGHT_PIN = 19       # Activate camlight GPIO pin
+INDICATOR_PIN = 26      # Activate indicator GPIO pin
 
 # Door class
 #

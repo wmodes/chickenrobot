@@ -3,6 +3,7 @@
 # date: Oct 2020
 # license: MIT
 
+import config
 import sys
 if sys.platform == "darwin":
     # OS X
@@ -15,7 +16,6 @@ import cv2 as cv
 import os
 from time import sleep
 import pysftp
-from settings import *
 import logging
 
 # CONSTANTS
@@ -31,32 +31,34 @@ class Camera(object):
     def __init__(self, max_horz, max_vert):
         self.max_h = max_horz
         self.max_v = max_vert
-        self.num_cams = 0
         self.cam_array = []
         self.image_array = []
+        self._setup_camlight()
         self._find_cams()
         self._setup_cams()
-        GPIO.setup(CAMLIGHT_PIN, GPIO.OUT)
 
     def _find_cams(self):
         """find usb cams"""
         self.cam_array = []
-        for cam_num in range(MAX_CAMS):
+        for cam_num in range(config.MAX_CAMS):
             cam = cv.VideoCapture(cam_num)
             if cam is None or not cam.isOpened():
-                logging.debug("Camera:Camera " + str(cam_num) + " not found")
+                logging.debug("Camera:Camera %s not found", str(cam_num))
                 pass
             else:
                 self.cam_array.append(cam)
-                logging.debug("Camera:Camera " + str(cam_num) + " found")
-        self.num_cams = len(self.cam_array)
+                logging.debug("Camera:Camera %s found", str(cam_num))
+        config.ACTIVE_CAMS = len(self.cam_array)
+        logging.info("Camera:Active cameras:%s", str(config.ACTIVE_CAMS))
 
     def _setup_cams(self):
         """configure cams"""
         for cam in self.cam_array:
-            # TODO: Handle exceptions
-            cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
-            cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
+            try:
+                cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
+                cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
+            except:
+                logging.warning("Camera:Failed to setup cameras (GPIO)")
 
     def _release_cams(self):
         """turn off cams after use"""
@@ -65,60 +67,86 @@ class Camera(object):
         self.cam_array = []
 
     def _take_image(self, cam_num):
+        logging.debug("Camera:_take_image(%s)", str(cam_num))
         # capture image
-        # TODO: Handle exceptions
-        GPIO.output(CAMLIGHT_PIN, LIGHT_ON)
-        sleep(500)
-        s, im = self.cam_array[cam_num].read()
-        sleep(500)
-        GPIO.output(CAMLIGHT_PIN, LIGHT_OFF)
+        try:
+            logging.debug("Camera:Taking photo")
+            s, im = self.cam_array[cam_num].read()
+        except:
+            logging.warning("Camera:Failed to take photo")
         return(im)
 
-    def take_all_images(self):
-        # self._find_cams()
-        # self._setup_cams()
+    def _take_all_images(self):
+        self.turn_on_camlight()
+        sleep(0.5)
         self.image_array = []
-        for cam_num in range(self.num_cams):
+        for cam_num in range(config.ACTIVE_CAMS):
             self.image_array.append(self._take_image(cam_num))
+        sleep(0.5)
+        self.turn_off_camlight()
         # self._release_cams()
 
-    def write_images(self):
-        for image_num in range(self.num_cams):
-            filename = IMAGE_DIR + "image" + str(image_num) + ".jpg"
-            logging.debug("Camera:Image filename:" + filename)
+    def _write_images(self):
+        logging.debug("Camera:write_images()")
+        for image_num in range(config.ACTIVE_CAMS):
+            filename = config.IMAGE_DIR + "image" + str(image_num) + ".jpg"
+            logging.debug("Camera:Image filename: %s", filename)
             cv.imwrite(filename, self.image_array[image_num])
 
-    def upload_images(self):
+    def _upload_images(self):
+        logging.debug("Camera:upload_images()")
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
-        # TODO: Handle exceptions
-        with pysftp.Connection(host=SFTP_SERVER,
-                               username=SFTP_USER,
-                               password=SFTP_PASSWORD,
-                               log=SFTP_LOG,
-                               cnopts=cnopts) as sftp:
-            with sftp.cd(SFTP_IMAGE_DIR):
-                for image_num in range(self.num_cams):
-                    filename = IMAGE_DIR + "image" + str(image_num) + ".jpg"
-                    sftp.put(filename)
+        try:
+            with pysftp.Connection(host=config.SFTP_SERVER,
+                                   username=config.SFTP_USER,
+                                   password=config.SFTP_PASSWORD,
+                                   log=config.SFTP_LOG,
+                                   cnopts=cnopts) as sftp:
+                with sftp.cd(config.SFTP_IMAGE_DIR):
+                    for image_num in range(config.ACTIVE_CAMS):
+                        filename = config.IMAGE_DIR + "image" + str(image_num) + ".jpg"
+                        sftp.put(filename)
+        except:
+            logging.warning("Camera:Failed to upload photos")
 
     def show_images(self):
-        for image_num in range(self.num_cams):
+        for image_num in range(config.ACTIVE_CAMS):
             cv.imshow("Test Image", self.image_array[image_num])
 
     def take_and_upload_images(self):
-        self.take_all_images()
-        self.write_images()
-        self.upload_images()
+        logging.debug("Camera:take_and_upload_images()")
+        self._take_all_images()
+        self._write_images()
+        self._upload_images()
+
+    def _setup_camlight(self):
+        GPIO.setup(config.CAMLIGHT_PIN, GPIO.OUT)
+
+    def turn_on_camlight(self):
+        logging.debug("Camera:Turn on camlight")
+        try:
+            GPIO.output(config.CAMLIGHT_PIN, LIGHT_ON)
+        except:
+            logging.warning("Camera:Failed to turn on camlight (GPIO)")
+        logging.debug("Camera:Camlight on")
+
+    def turn_off_camlight(self):
+        logging.debug("Camera:Turn off camlight")
+        try:
+            GPIO.output(config.CAMLIGHT_PIN, LIGHT_OFF)
+        except:
+            logging.warning("Camera:Failed to turn off camlight (GPIO)")
+        logging.debug("Camera:Camlight off")
 
     def report(self):
-        if self.num_cams == 0:
+        if config.ACTIVE_CAMS == 0:
             text = "I have no camera watching. "
-        if self.num_cams == 1:
+        if config.ACTIVE_CAMS == 1:
             text = "I have one camera watching. "
         else:
-            text = f"I have {self.num_cams} cameras watching. "
-        logging.info("Report:" + text)
+            text = f"I have {config.ACTIVE_CAMS} cameras watching. "
+        logging.info("Camera:Report: %s", text)
         return text
 
 
@@ -133,14 +161,14 @@ def main():
     logger = logging.getLogger()
 
     if sys.platform != "darwin":
-        MAX_HORZ = 1280
-        MAX_VERT = 1024
+        config.MAX_HORZ = 1280
+        config.MAX_VERT = 1024
     else:
-        MAX_HORZ = 1920
-        MAX_VERT = 1080
+        config.MAX_HORZ = 1920
+        config.MAX_VERT = 1080
 
-    camera = Camera(MAX_HORZ, MAX_VERT)
-    logging.info(camera.report())
+    camera = Camera(config.MAX_HORZ, config.MAX_VERT)
+    logging.info("Camera:Report:%s", camera.report())
     camera.take_and_upload_images()
 
 if __name__ == '__main__':

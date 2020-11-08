@@ -3,13 +3,14 @@
 # date: Oct 2020
 # license: MIT
 
+import config
 from comms import Comms
 from light import Light
 from door import Door
 from camera import Camera
-from settings import *
 from time import sleep
 import logging
+import pprint
 
 # General psuedocode
 #
@@ -35,10 +36,10 @@ class Chickenrobot(object):
     def __init__(self):
         #
         # instantiate all our classes
-        self.comms = Comms(ORIGIN_NUM, TARGET_NUMS)
-        self.light = Light(CITY_NAME, LATITUDE, LONGITUDE, SUNRISE_DELAY, SUNSET_DELAY)
-        self.door = Door(REVS)
-        self.camera = Camera(MAX_HORZ, MAX_VERT)
+        self.comms = Comms(config.ORIGIN_NUM, config.TARGET_NUMS)
+        self.light = Light(config.CITY_NAME, config.LATITUDE, config.LONGITUDE, config.SUNRISE_DELAY, config.SUNSET_DELAY)
+        self.door = Door(config.REVS)
+        self.camera = Camera(config.MAX_HORZ, config.MAX_VERT)
 
     def on_duty(self):
         # issue reports on start
@@ -54,7 +55,7 @@ class Chickenrobot(object):
                 result = self.door.close_door_auto()
                 # It will only return something if it moved the doors
                 if result:
-                    logging.info("Door status:" + result)
+                    logging.info("Robot:Door status:%s", result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
             #
@@ -67,7 +68,7 @@ class Chickenrobot(object):
                 result = self.door.open_door_auto()
                 # It will only return something if it moved the doors
                 if result:
-                    logging.info("Door status:" + result)
+                    logging.info("Robot:Door status:%s", result)
                     # self.comms.send_text(result)
                     self.send_report_and_photos()
             #
@@ -75,9 +76,12 @@ class Chickenrobot(object):
             #
             command_list = self.comms.check_for_commands()
             # print("command list:", command_list)
+            logging.debug("Robot:Received from Comms:Command list:%s", pprint.pformat(command_list, indent=4))
             if command_list:
                 for request_num, cmd in command_list:
+                    logging.info("Robot:Handling command from %s:%s ", request_num, cmd)
                     if cmd == "photo" or cmd == "image" or cmd == "picture":
+                        self.camera.take_and_upload_images()
                         self.comms.send_text_and_photos("Here's photos of the coop. ", request_num)
                     elif cmd == "close":
                         self.comms.send_text(self.door.close_door_manual(), request_num)
@@ -87,10 +91,12 @@ class Chickenrobot(object):
                         self.send_report_and_photos(request_num)
                     elif cmd == "door":
                         self.comms.send_text(self.door.report(), request_num)
-                    elif cmd == "sunrise" or cmd == "sunset" or cmd == "light":
+                    elif cmd == "sun" or cmd == "light":
                         self.comms.send_text(self.light.report(), request_num)
-                    elif cmd == "help":
-                        txt = "Hi! I'm on duty. Helpful commands are status, photo, open, close, door, sunset, sunrise."
+                    elif cmd == "cam":
+                        self.comms.send_text(self.camera.report(), request_num)
+                    else:
+                        txt = "Hi! I'm on duty. Helpful commands are status, photo, open, close, doors, sunset, sunrise, cameras."
                         self.comms.send_text(txt, request_num)
             sleep(5)
                 # print('.')
@@ -113,7 +119,7 @@ class Chickenrobot(object):
 
 def main():
     logging.basicConfig(
-        filename=LOG_FILENAME,
+        filename=config.LOG_FILENAME,
         # encoding='utf-8',
         filemode='w',
         format='%(asctime)s %(levelname)s:%(message)s',
@@ -124,15 +130,15 @@ def main():
     # logging.info('So should this')
     # logging.warning('And this, too')
     # logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
-    logging.info("Starting")
+    logging.info("Robot:Starting")
 
     # nuthin here yet
     chickenrobot = Chickenrobot()
     try:
         chickenrobot.on_duty()
     except KeyboardInterrupt:
-        logging.info("I'm off duty.")
-        logging.info("Finishing")
+        logging.info("Robot:I'm off duty.")
+        logging.info("Robot:Finishing")
 
 if __name__ == '__main__':
     main()

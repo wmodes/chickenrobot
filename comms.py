@@ -3,10 +3,11 @@
 # date: Oct 2020
 # license: MIT
 
+import config
 import random
 from twilio.rest import Client
-from settings import *
 import logging
+import pprint
 
 # CONSTANTS
 
@@ -20,9 +21,9 @@ COMMANDS = [
     "status",
     "report",
     "door",
-    "sunrise",
-    "sunset",
-    "light"
+    "sun",
+    "light",
+    "cam"
 ]
 
 logger = logging.getLogger()
@@ -31,7 +32,7 @@ class Comms(object):
     """Takes care of all outward communications"""
 
     def __init__(self, origin_num, target_nums):
-        self.client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        self.client = Client(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
         self.origin_num = origin_num
         self.target_nums = target_nums
 
@@ -58,34 +59,38 @@ class Comms(object):
             my_target_nums = [passed_num]
         else:
             my_target_nums = self.target_nums
-        msg_text = MSG_PREFIX + msg_text + "\n" + self.random_signoff()
-        for number in my_target_nums:
-            logging.info("Comms:Sending message to:" + number)
-            # TODO: Handle exceptions
-            message = self.client.messages.create(
-                body = msg_text,
-                from_ = self.origin_num,
-                to = number
-            )
+        msg_text = config.MSG_PREFIX + msg_text + "\n" + self.random_signoff()
+        for phone_number in my_target_nums:
+            logging.info("Comms:Sending msg to %s", phone_number)
+            try:
+                message = self.client.messages.create(
+                    body = msg_text,
+                    from_ = self.origin_num,
+                    to = phone_number
+                )
+            except:
+                logging.warning("Comms:Failed to send msg to %s: %s", phone_number, msg_text)
 
     def send_text_and_photos(self, msg_text, passed_num=None):
         if passed_num:
             my_target_nums = [passed_num]
         else:
             my_target_nums = self.target_nums
-        msg_text = MSG_PREFIX + msg_text + "\n" + self.random_signoff()
+        msg_text = config.MSG_PREFIX + msg_text + "\n" + self.random_signoff()
         image_array = []
-        for num in range(NUM_CAMS):
-            image_array.append(IMAGE_URL_BASE + str(num) + BASE_URL_POSTFIX)
-        for number in my_target_nums:
-            logging.info("Comms:Sending photos to:" + number)
-            # TODO: Handle exceptions
-            message = self.client.messages.create(
-                body = msg_text,
-                from_ = self.origin_num,
-                media_url=image_array,
-                to = number
-            )
+        for num in range(config.ACTIVE_CAMS):
+            image_array.append(config.IMAGE_URL_BASE + str(num) + config.BASE_URL_POSTFIX)
+        for phone_number in my_target_nums:
+            logging.info("Comms:Sending photos to: %s", phone_number)
+            try:
+                message = self.client.messages.create(
+                    body = msg_text,
+                    from_ = self.origin_num,
+                    media_url=image_array,
+                    to = phone_number
+                )
+            except:
+                logging.warning("Comms:Failed to send msg to %s: %s", phone_number, msg_text)
 
     def check_for_commands(self):
         """check for commands via sms and respond"""
@@ -97,37 +102,47 @@ class Comms(object):
         if (current_level < logging.DEBUG):
             logger.setLevel(logging.WARNING)
         # We fetch the list from the Twilio API
-        # (and reverse it since it comes most recent first)
-        # TODO: Handle exceptions
-        messages = self.client.messages.list(to=ORIGIN_NUM,limit=10).reverse()
+        try:
+            messages = self.client.messages.list(to=config.ORIGIN_NUM)
+        except:
+            logging.warning("Comms:Failed to get msg list")
+        # and reverse it since it comes most recent first
+        messages.reverse()
         # restore loggging
         logger.setLevel(current_level)
         if not messages:
+            logging.debug("Comms:No msgs found")
             return None
+        else:
+            for record in messages:
+                logging.debug("Comms:Msg found:%s", record.sid)
         command_list = []
         for msg in messages:
             # check if on list of recipients
-            if msg.from_ not in TARGET_NUMS:
+            if msg.from_ not in config.TARGET_NUMS:
                 # no, kill it
-                logging.debug("Comms:Deleting msg from number not in sub list from" + msg.from_ + "Body:" + msg.body)
-                # TODO: Handle exceptions
-                self.client.messages(msg.sid).delete()
+                logging.debug("Comms:Deleting msg from number not in sub list from $s: %s", msg.from_, msg.body)
+                try:
+                    self.client.messages(msg.sid).delete()
+                except:
+                    logging.warning("Comms:Failed to delete msg:sid %s", msg.sid)
                 continue
-            # act on command
+            # look for command within msg
             cmd = ""
             for keyword in COMMANDS:
                 if keyword in msg.body.lower():
                     cmd = keyword
                     break
             command_list.append((msg.from_, cmd))
-            logging.info("Comms:Message received: From:" + msg.from_ + "Command:" + cmd)
-            # TODO: Delete command ONLY after succeess handling it?
+            logging.info("Comms:Message received from %s: %s", msg.from_, cmd)
             # delete message
-            # TODO: Handle exceptions
             logging.debug("Comms:Deleting handled message")
-            self.client.messages(msg.sid).delete()
+            try:
+                self.client.messages(msg.sid).delete()
+            except:
+                logging.warning("Comms:Failed to delete msg:sid %s", msg.sid)
+        logging.debug("Comms:Command list:%s", pprint.pformat(command_list, indent=4))
         return command_list
-
 
 def main():
     import sys
@@ -138,7 +153,7 @@ def main():
         level=logging.DEBUG
     )
     logger = logging.getLogger()
-    comms = Comms(ORIGIN_NUM, TARGET_NUMS)
+    comms = Comms(config.ORIGIN_NUM, config.TARGET_NUMS)
     # comms.send_text("Integrating classes")
     comms.send_text_and_photos("Here's some photos")
 

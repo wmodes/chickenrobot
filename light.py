@@ -3,11 +3,11 @@
 # date: Oct 2020
 # license: MIT
 
+import config
 import datetime
 from suntime import Sun, SunTimeException
 from datetime import datetime, timedelta
 from dateutil import tz
-from settings import *
 import logging
 
 # Auto-detect timezones
@@ -65,42 +65,42 @@ class Light(object):
         cd = self.close_door(dt)
         now = datetime.now().astimezone(to_zone)
         if dt: now = dt
-        logging.debug("Light:Now:" + now.strftime(TIME_FORMAT))
-        logging.debug("Light:Sunrise:" + sr.strftime(TIME_FORMAT))
-        logging.debug("Light:Open door:" + od.strftime(TIME_FORMAT))
-        logging.debug("Light:Sunset:" + ss.strftime(TIME_FORMAT))
-        logging.debug("Light:Close door:" + cd.strftime(TIME_FORMAT))
+        logging.debug("Light:Now: %s", now.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Sunrise: %s", sr.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Open door: %s", od.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Sunset: %s", ss.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Close door: %s", cd.strftime(config.TIME_FORMAT))
         if self.is_dark(dt):
             text = f"It is dark now in {self.location}. "
         else:
             text = f"It is daylight now in {self.location}. "
         # sunrise hasn't happened yet
         if now < sr:
-            text += f"The sun will rise at {sr.strftime(TIME_FORMAT)}"
+            text += f"The sun will rise at {sr.strftime(config.TIME_FORMAT)}"
             if sr == od:
                  text += " and it should be light enough to open the doors. "
             else:
-                text += f" and it will be light enough to open the doors at {od.strftime(TIME_FORMAT)}. "
+                text += f" and it will be light enough to open the doors at {od.strftime(config.TIME_FORMAT)}. "
         # sunset has not yet happened
         elif now < ss:
-            text += f"The sun rose at {sr.strftime(TIME_FORMAT)} and will set at {ss.strftime(TIME_FORMAT)}"
+            text += f"The sun rose at {sr.strftime(config.TIME_FORMAT)} and will set at {ss.strftime(config.TIME_FORMAT)}"
             if ss == cd:
                  text += " and it should be dark enough to close the doors. "
             else:
-                text += f" and it will be dark enough to close the doors at {cd.strftime(TIME_FORMAT)}. "
+                text += f" and it will be dark enough to close the doors at {cd.strftime(config.TIME_FORMAT)}. "
         # sunset already happened
         else:
-            text += f"The sun set at {ss.strftime(TIME_FORMAT)}"
+            text += f"The sun set at {ss.strftime(config.TIME_FORMAT)}"
             if ss == cd:
                  text += " and it should be dark enough to close the doors. "
             elif now < cd:
-                text += f" and it will be dark enough to close the doors at {cd.strftime(TIME_FORMAT)}. "
+                text += f" and it will be dark enough to close the doors at {cd.strftime(config.TIME_FORMAT)}. "
             else:
-                text += f" and it was dark enough to close the doors at {cd.strftime(TIME_FORMAT)}. "
+                text += f" and it was dark enough to close the doors at {cd.strftime(config.TIME_FORMAT)}. "
             tomorrow = datetime.now().astimezone(to_zone) +             timedelta(1)
             srt = self.sunrise(tomorrow)
-            text += f"Tomorrow's sunrise is at {srt.strftime(TIME_FORMAT)}. "
-        logging.info("Report:" + text)
+            text += f"Tomorrow's sunrise is at {srt.strftime(config.TIME_FORMAT)}. "
+        logging.info("Report:%s", text)
         return text
 
 
@@ -123,7 +123,7 @@ def main():
 
     light = Light(city_name, latitude, longitude, sunrise_delay, sunset_delay)
     # now = datetime.now().astimezone(to_zone) + timedelta(hours=10)
-    logging.info(light.report())
+    logging.info("Door:Report:%s", light.report())
 
 if __name__ == '__main__':
     main()

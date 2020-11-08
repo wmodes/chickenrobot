@@ -3,6 +3,7 @@
 # date: Oct 2020
 # license: MIT
 
+import config
 import sys
 if sys.platform == "darwin":
     # OS X
@@ -13,7 +14,6 @@ if sys.platform == "darwin":
 import RPi.GPIO as GPIO
 from time import sleep
 import os.path
-from settings import *
 import logging
 
 # Directions
@@ -26,8 +26,8 @@ OPEN = 1
 AUTO = 0
 MANUAL = 1
 
-STEP_COUNT = SPR
-STEP_DELAY = 1 / SPR   # 1 second / SPR
+STEP_COUNT = config.SPR
+STEP_DELAY = 1 / config.SPR   # 1 second / SPR
 
 class Door(object):
     """class to open and close coop door and report on status"""
@@ -39,17 +39,17 @@ class Door(object):
         self._read_door_state()
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(DIR_PIN, GPIO.OUT)
-        GPIO.setup(STEP_PIN, GPIO.OUT)
-        GPIO.setup(INDICATOR_PIN, GPIO.OUT)
+        GPIO.setup(config.DIR_PIN, GPIO.OUT)
+        GPIO.setup(config.STEP_PIN, GPIO.OUT)
+        GPIO.setup(config.INDICATOR_PIN, GPIO.OUT)
 
     def _store_door_state(self):
-        with open(DOOR_STATE_FILE, 'w') as file:
+        with open(config.DOOR_STATE_FILE, 'w') as file:
             file.write("DOOR_STATUS=" + str(self.status))
 
     def _read_door_state(self):
-        if (os.path.isfile(DOOR_STATE_FILE)):
-            with open(DOOR_STATE_FILE, 'r') as file:
+        if (os.path.isfile(config.DOOR_STATE_FILE)):
+            with open(config.DOOR_STATE_FILE, 'r') as file:
                 line = file.read()
             try:
                 self.status = int(line.split("=")[1].strip())
@@ -60,14 +60,14 @@ class Door(object):
             self._store_door_state()
 
     def _set_indicator(self, state):
-        GPIO.output(INDICATOR_PIN, state)
+        GPIO.output(config.INDICATOR_PIN, state)
 
     def _move_door(self, state):
-        GPIO.output(DIR_PIN, state)
+        GPIO.output(config.DIR_PIN, state)
         for x in range(self.revs * STEP_COUNT):
-            GPIO.output(STEP_PIN, GPIO.HIGH)
+            GPIO.output(config.STEP_PIN, GPIO.HIGH)
             sleep(STEP_DELAY)
-            GPIO.output(STEP_PIN, GPIO.LOW)
+            GPIO.output(config.STEP_PIN, GPIO.LOW)
             sleep(STEP_DELAY)
         # set indicator light
         self._set_indicator(state)
@@ -181,7 +181,7 @@ class Door(object):
                 text += "in AUTOMATIC mode. "
             else:
                 text += "in MANUAL mode (AUTOMATIC resumes at sunset). "
-        logging.info("Report:" + text)
+        logging.info("Doors:Report:%s", text)
         return text
 
 def main():

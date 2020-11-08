@@ -130,7 +130,7 @@ class Door(object):
         logging.info("Doors:Open request received (MANUAL)")
         if self.status == OPEN:
             # switch to auto mode, so door will auto close at sunset
-            self.mode = AUTO
+            # self.mode = AUTO
             logging.info("Doors:Already open (MANUAL)")
             return "The doors are already open. "
         else:

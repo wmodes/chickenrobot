@@ -5,6 +5,7 @@
 
 import config
 import sys
+import uuid
 if sys.platform == "darwin":
     # OS X
     import fake_rpi
@@ -87,13 +88,16 @@ class Camera(object):
         # self._release_cams()
 
     def _write_images(self):
+        filename_array = []
         logging.debug("Camera:write_images()")
         for image_num in range(config.ACTIVE_CAMS):
-            filename = config.IMAGE_DIR + "image" + str(image_num) + ".jpg"
+            filename = config.IMAGE_FILE_BASE + '.' + str(uuid.uuid4()) + '.' + str(image_num) + config.IMAGE_FILE_POSTFIX
+            filename_array.append(filename)
             logging.debug("Camera:Image filename: %s", filename)
             cv.imwrite(filename, self.image_array[image_num])
+        return filename_array
 
-    def _upload_images(self):
+    def _upload_images(self, filename_array):
         logging.debug("Camera:upload_images()")
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
@@ -104,8 +108,7 @@ class Camera(object):
                                    log=config.SFTP_LOG,
                                    cnopts=cnopts) as sftp:
                 with sftp.cd(config.SFTP_IMAGE_DIR):
-                    for image_num in range(config.ACTIVE_CAMS):
-                        filename = config.IMAGE_DIR + "image" + str(image_num) + ".jpg"
+                    for filename in filename_array:
                         sftp.put(filename)
         except:
             logging.warning("Camera:Failed to upload photos")
@@ -117,8 +120,9 @@ class Camera(object):
     def take_and_upload_images(self):
         logging.debug("Camera:take_and_upload_images()")
         self._take_all_images()
-        self._write_images()
-        self._upload_images()
+        filename_array = self._write_images()
+        self._upload_images(filename_array)
+        return filename_array
 
     def _setup_camlight(self):
         GPIO.setup(config.CAMLIGHT_PIN, GPIO.OUT)

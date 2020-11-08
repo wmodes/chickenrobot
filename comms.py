@@ -71,15 +71,17 @@ class Comms(object):
             except:
                 logging.warning("Comms:Failed to send msg to %s: %s", phone_number, msg_text)
 
-    def send_text_and_photos(self, msg_text, passed_num=None):
+    def send_text_and_photos(self, msg_text, filename_array, passed_num=None):
         if passed_num:
             my_target_nums = [passed_num]
         else:
             my_target_nums = self.target_nums
         msg_text = config.MSG_PREFIX + msg_text + "\n" + self.random_signoff()
         image_array = []
-        for num in range(config.ACTIVE_CAMS):
-            image_array.append(config.IMAGE_URL_BASE + str(num) + config.BASE_URL_POSTFIX)
+        for filename in filename_array:
+            image_url = config.IMAGE_URL_BASE + filename
+            logging.debug("Comms:Image URL:%s", image_url)
+            image_array.append(image_url)
         for phone_number in my_target_nums:
             logging.info("Comms:Sending photos to: %s", phone_number)
             try:

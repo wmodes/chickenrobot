@@ -30,7 +30,9 @@ else:
     MAX_VERT = 1024
 MAX_CAMS = 4
 ACTIVE_CAMS = 0
-IMAGE_DIR = "images/"
+IMAGE_FILE_BASE = "images/image"
+IMAGE_FILE_POSTFIX = '.jpg'
+IMAGE_URL_BASE = 'https://modes.io/interactive/chickenrobot/'
 SFTP_SERVER = 'sftp.sd5.gpaas.net'
 SFTP_USER = '41496'
 SFTP_IMAGE_DIR = '/lamp0/web/vhosts/modes.io/htdocs/interactive/chickenrobot/images'
@@ -54,8 +56,6 @@ DOOR_STATE_FILE = "door.state"
 #
 TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
 TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
-IMAGE_URL_BASE = 'https://modes.io/interactive/chickenrobot/images/image'
-BASE_URL_POSTFIX = '.jpg'
 MSG_PREFIX = "Message from Chicken Robot:\n"
 MSG_POSTFIX = "\nBawwwk! 🐓🤖"
 ORIGIN_NUM = '+18313370604'

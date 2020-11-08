@@ -81,8 +81,8 @@ class Chickenrobot(object):
                 for request_num, cmd in command_list:
                     logging.info("Robot:Handling command from %s:%s ", request_num, cmd)
                     if cmd == "photo" or cmd == "image" or cmd == "picture":
-                        self.camera.take_and_upload_images()
-                        self.comms.send_text_and_photos("Here's photos of the coop. ", request_num)
+                        filename_array = self.camera.take_and_upload_images()
+                        self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, request_num)
                     elif cmd == "close":
                         self.comms.send_text(self.door.close_door_manual(), request_num)
                     elif cmd == "open":
@@ -114,8 +114,8 @@ class Chickenrobot(object):
 
     def send_report_and_photos(self, passed_num=None):
         self.comms.send_text(self.report(), passed_num)
-        self.camera.take_and_upload_images()
-        self.comms.send_text_and_photos("Here's photos of the coop. ", passed_num)
+        filename_array = self.camera.take_and_upload_images()
+        self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, passed_num)
 
 def main():
     logging.basicConfig(

@@ -93,7 +93,7 @@ class Camera(object):
         for image_num in range(config.ACTIVE_CAMS):
             filename = config.IMAGE_FILE_BASE + '.' + str(uuid.uuid4()) + '.' + str(image_num) + config.IMAGE_FILE_POSTFIX
             filename_array.append(filename)
-            logging.debug("Camera:Image filename: %s", filename)
+            logging.debug("Camera:Image filename:%s", filename)
             cv.imwrite(filename, self.image_array[image_num])
         return filename_array
 
@@ -156,7 +156,7 @@ class Camera(object):
             text = "I have one camera watching. "
         else:
             text = f"I have {config.ACTIVE_CAMS} cameras watching. "
-        logging.info("Camera:Report: %s", text)
+        logging.info("Camera:Report:%s", text)
         return text
 
 

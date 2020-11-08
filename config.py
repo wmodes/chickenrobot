@@ -6,9 +6,11 @@
 import os, sys
 from dotenv import load_dotenv
 load_dotenv()
+import logging
 
 # Chickenrobot class
 LOG_FILENAME = "logs/cr.log"
+LOG_LEVEL = logging.INFO
 
 # Light class
 #
@@ -56,6 +58,7 @@ DOOR_STATE_FILE = "door.state"
 #
 TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
 TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
+TWILIO_LOG_LEVEL = logging.WARNING
 MSG_PREFIX = "Message from Chicken Robot:\n"
 MSG_POSTFIX = "\nBawwwk! 🐓🤖"
 ORIGIN_NUM = '+18313370604'

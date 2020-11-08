@@ -27,6 +27,8 @@ COMMANDS = [
 ]
 
 logger = logging.getLogger()
+twilio_logger = logging.getLogger('twilio.http_client')
+twilio_logger.setLevel(logging.WARNING)
 
 class Comms(object):
     """Takes care of all outward communications"""
@@ -35,6 +37,7 @@ class Comms(object):
         self.client = Client(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
         self.origin_num = origin_num
         self.target_nums = target_nums
+        # set logging level for (verbose) TWILIO
 
     def random_signoff(self):
         return random.choice([
@@ -69,7 +72,7 @@ class Comms(object):
                     to = phone_number
                 )
             except:
-                logging.warning("Comms:Failed to send msg to %s: %s", phone_number, msg_text)
+                logging.warning("Comms:Failed to send msg to %s:%s", phone_number, msg_text)
 
     def send_text_and_photos(self, msg_text, filename_array, passed_num=None):
         if passed_num:
@@ -83,7 +86,7 @@ class Comms(object):
             logging.debug("Comms:Image URL:%s", image_url)
             image_array.append(image_url)
         for phone_number in my_target_nums:
-            logging.info("Comms:Sending photos to: %s", phone_number)
+            logging.info("Comms:Sending photos to:%s", phone_number)
             try:
                 message = self.client.messages.create(
                     body = msg_text,
@@ -92,17 +95,16 @@ class Comms(object):
                     to = phone_number
                 )
             except:
-                logging.warning("Comms:Failed to send msg to %s: %s", phone_number, msg_text)
+                logging.warning("Comms:Failed to send msg to %s:%s", phone_number, msg_text)
 
     def check_for_commands(self):
         """check for commands via sms and respond"""
         # ref: https://www.twilio.com/docs/sms/tutorials/how-to-retrieve-and-modify-message-history-python
         #
-        # dial down loggging while we are in the twillio API
+        # dial down loggging while we are in the (verbose) twillio API
         # if we are not set to DEBUG level
-        current_level = logger.level
-        if (current_level < logging.DEBUG):
-            logger.setLevel(logging.WARNING)
+        # if (logger.level < logging.DEBUG):
+        #     logger.setLevel(logging.WARNING)
         # We fetch the list from the Twilio API
         try:
             messages = self.client.messages.list(to=config.ORIGIN_NUM)
@@ -111,7 +113,7 @@ class Comms(object):
         # and reverse it since it comes most recent first
         messages.reverse()
         # restore loggging
-        logger.setLevel(current_level)
+        # logger.setLevel(config.LOG_LEVEL)
         if not messages:
             logging.debug("Comms:No msgs found")
             return None
@@ -123,7 +125,7 @@ class Comms(object):
             # check if on list of recipients
             if msg.from_ not in config.TARGET_NUMS:
                 # no, kill it
-                logging.debug("Comms:Deleting msg from number not in sub list from $s: %s", msg.from_, msg.body)
+                logging.debug("Comms:Deleting msg from number not in sub list from $s:%s", msg.from_, msg.body)
                 try:
                     self.client.messages(msg.sid).delete()
                 except:
@@ -136,7 +138,7 @@ class Comms(object):
                     cmd = keyword
                     break
             command_list.append((msg.from_, cmd))
-            logging.info("Comms:Message received from %s: %s", msg.from_, cmd)
+            logging.info("Comms:Message received from %s:%s", msg.from_, cmd)
             # delete message
             logging.debug("Comms:Deleting handled message")
             try:

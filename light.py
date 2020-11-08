@@ -65,11 +65,11 @@ class Light(object):
         cd = self.close_door(dt)
         now = datetime.now().astimezone(to_zone)
         if dt: now = dt
-        logging.debug("Light:Now: %s", now.strftime(config.TIME_FORMAT))
-        logging.debug("Light:Sunrise: %s", sr.strftime(config.TIME_FORMAT))
-        logging.debug("Light:Open door: %s", od.strftime(config.TIME_FORMAT))
-        logging.debug("Light:Sunset: %s", ss.strftime(config.TIME_FORMAT))
-        logging.debug("Light:Close door: %s", cd.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Now:%s", now.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Sunrise:%s", sr.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Open door:%s", od.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Sunset:%s", ss.strftime(config.TIME_FORMAT))
+        logging.debug("Light:Close door:%s", cd.strftime(config.TIME_FORMAT))
         if self.is_dark(dt):
             text = f"It is dark now in {self.location}. "
         else:

@@ -76,7 +76,6 @@ class Door(object):
         self._store_door_state()
 
     def open_door_auto(self):
-        logging.info("Doors:Open request received (AUTO)")
         # if we are in auto mode
         if self.mode == AUTO:
             if self.status == OPEN:
@@ -84,11 +83,13 @@ class Door(object):
                 # logging.info("Doors:Doors are already open (AUTO)")
                 return None
             else:
+                logging.info("Doors:Open request received (AUTO)")
                 self._move_door(OPEN)
                 logging.info("Doors:Opened the doors (AUTO)")
                 return "I just opened the doors. "
         # if we are in MANUAL mode
         else:
+            logging.info("Doors:Open request received (AUTO)")
             # if the doors are OPEN
             if self.status == OPEN:
                 # return to AUTO mode
@@ -103,19 +104,20 @@ class Door(object):
                 return None
 
     def close_door_auto(self):
-        logging.info("Doors:Close request received (AUTO)")
         # if we are in auto mode
         if self.mode == AUTO:
             if self.status == CLOSED:
                 # The doors are already closed
-                # logging.info("Doors:Already closed (AUTO)")
+                # logging.debug("Doors:Already closed (AUTO)")
                 return None
             else:
+                logging.info("Doors:Close request received (AUTO)")
                 self._move_door(CLOSED)
                 logging.info("Doors:Opened the doors (AUTO)")
                 return "I just closed the doors. "
         # if we are in MANUAL mode
         else:
+            logging.info("Doors:Close request received (AUTO)")
             # if the doors are OPEN
             if self.status == CLOSED:
                 self.mode = AUTO

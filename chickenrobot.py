@@ -123,7 +123,7 @@ def main():
         # encoding='utf-8',
         filemode='w',
         format='%(asctime)s %(levelname)s:%(message)s',
-        level=logging.DEBUG
+        level=logging.INFO
     )
     logger = logging.getLogger()
     # logging.debug('This message should go to the log file')

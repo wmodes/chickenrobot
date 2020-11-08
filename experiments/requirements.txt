@@ -1,9 +1,8 @@
-pysftp==0.2.9
-opencv_python==4.4.0.44
 requests==2.24.0
 twilio==6.46.0
+pysftp==0.2.9
 suntime==1.2.5
+opencv_python==4.4.0.44
 beautifulsoup4==4.9.3
-fake_rpi==0.7.1
 python-dotenv==0.15.0
 python_dateutil==2.8.1

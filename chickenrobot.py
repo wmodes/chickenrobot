@@ -121,7 +121,7 @@ def main():
     logging.basicConfig(
         filename=config.LOG_FILENAME,
         # encoding='utf-8',
-        filemode='w',
+        filemode='a',
         format='%(asctime)s %(levelname)s:%(message)s',
         level=config.LOG_LEVEL
     )

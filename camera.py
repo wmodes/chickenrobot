@@ -74,7 +74,7 @@ class Camera(object):
         logging.debug("Camera:_take_image(%s)", str(cam_num))
         # capture image
         try:
-            logging.debug("Camera:Taking photo")
+            logging.info("Camera:Taking photo")
             s, im = self.cam_array[cam_num].read()
         except:
             logging.warning("Camera:Failed to take photo")

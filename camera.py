@@ -102,7 +102,7 @@ class Camera(object):
         return filename_array
 
     def _upload_images(self, filename_array):
-        logging.debug("Camera:upload_images()")
+        logging.info("Camera:Uploading images")
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         try:

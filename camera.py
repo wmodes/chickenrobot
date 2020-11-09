@@ -124,6 +124,7 @@ class Camera(object):
             logging.warning("Camera:Failed to upload photos")
 
     def _cleanup_images(self):
+        logging.info("Camera:Cleaning up local image files")
         for file in os.listdir(config.IMAGE_DIR):
             if not file.endswith(config.IMAGE_FILE_POSTFIX):
                 continue

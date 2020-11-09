@@ -41,7 +41,7 @@ class Door(object):
         self.mode = AUTO
         self._read_door_state()
         GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(config.PINOUT_SCHEME)
         GPIO.setup(config.DIR_PIN, GPIO.OUT)
         GPIO.setup(config.STEP_PIN, GPIO.OUT)
         GPIO.setup(config.INDICATOR_PIN, GPIO.OUT)

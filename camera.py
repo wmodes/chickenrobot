@@ -134,6 +134,7 @@ class Camera(object):
         return filename_array
 
     def _setup_camlight(self):
+        GPIO.setmode(config.PINOUT_SCHEME)
         GPIO.setup(config.CAMLIGHT_PIN, GPIO.OUT)
 
     def turn_on_camlight(self):

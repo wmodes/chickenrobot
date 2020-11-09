@@ -6,6 +6,13 @@
 import os, sys
 from dotenv import load_dotenv
 load_dotenv()
+if sys.platform == "darwin":
+    # OS X
+    import fake_rpi
+    sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
+    sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+    # sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
+import RPi.GPIO as GPIO
 import logging
 
 # Chickenrobot class
@@ -48,6 +55,7 @@ DIR_PIN = 20            # Direction GPIO pin
 STEP_PIN = 21           # Step GPIO pin
 CAMLIGHT_PIN = 19       # Activate camlight GPIO pin
 INDICATOR_PIN = 26      # Activate indicator GPIO pin
+PINOUT_SCHEME = GPIO.BCM   # Boradcom pin numbering (NOT Wiring Pin numbering)
 
 # Door class
 #

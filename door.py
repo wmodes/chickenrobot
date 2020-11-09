@@ -98,9 +98,9 @@ class Door(object):
                 return "I just opened the doors. "
         # if we are in MANUAL mode
         else:
-            logging.info("Doors:Open request received (AUTO)")
             # if the doors are OPEN
             if self.status == OPEN:
+                logging.info("Doors:Open request received (AUTO)")
                 # return to AUTO mode
                 self.mode = AUTO
                 # The doors are already open
@@ -126,9 +126,9 @@ class Door(object):
                 return "I just closed the doors. "
         # if we are in MANUAL mode
         else:
-            logging.info("Doors:Close request received (AUTO)")
             # if the doors are OPEN
             if self.status == CLOSED:
+                logging.info("Doors:Close request received (AUTO)")
                 self.mode = AUTO
                 # The doors are already closed
                 return None

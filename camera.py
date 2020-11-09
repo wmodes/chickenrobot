@@ -137,7 +137,7 @@ class Camera(object):
         GPIO.setup(config.CAMLIGHT_PIN, GPIO.OUT)
 
     def turn_on_camlight(self):
-        logging.debug("Camera:Turn on camlight")
+        logging.info("Camera:Turning on camlight")
         try:
             GPIO.output(config.CAMLIGHT_PIN, LIGHT_ON)
         except:
@@ -145,7 +145,7 @@ class Camera(object):
         logging.debug("Camera:Camlight on")
 
     def turn_off_camlight(self):
-        logging.debug("Camera:Turn off camlight")
+        logging.info("Camera:Turning off camlight")
         try:
             GPIO.output(config.CAMLIGHT_PIN, LIGHT_OFF)
         except:

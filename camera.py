@@ -5,6 +5,7 @@
 
 import config
 import sys
+import os
 import uuid
 if sys.platform == "darwin":
     # OS X
@@ -122,6 +123,12 @@ class Camera(object):
         except:
             logging.warning("Camera:Failed to upload photos")
 
+    def _cleanup_images(self):
+        for file in os.listdir(config.IMAGE_DIR):
+            if not file.endswith(config.IMAGE_FILE_POSTFIX):
+                continue
+                os.remove(os.path.join(config.IMAGE_DIR, file))
+
     def show_images(self):
         for image_num in range(config.ACTIVE_CAMS):
             cv.imshow("Test Image", self.image_array[image_num])
@@ -131,6 +138,7 @@ class Camera(object):
         self._take_all_images()
         filename_array = self._write_images()
         self._upload_images(filename_array)
+        self._cleanup_images()
         return filename_array
 
     def _setup_camlight(self):

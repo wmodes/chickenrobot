@@ -40,7 +40,8 @@ else:
     MAX_VERT = 1024
 MAX_CAMS = 4
 ACTIVE_CAMS = 0
-IMAGE_FILE_BASE = "images/image"
+IMAGE_DIR = "images"
+IMAGE_FILE_BASE = IMAGE_DIR + "/image"
 IMAGE_FILE_POSTFIX = '.jpg'
 IMAGE_URL_BASE = 'https://modes.io/interactive/chickenrobot/'
 SFTP_SERVER = 'sftp.sd5.gpaas.net'

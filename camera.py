@@ -23,6 +23,8 @@ import logging
 LIGHT_OFF = 0
 LIGHT_ON = 1
 
+logging.getLogger("paramiko").setLevel(logging.WARNING)
+
 # NOTE: max resolution of the hbv-1615 is 1280x1024
 # If you switch to another cam, you may have to adjust this
 

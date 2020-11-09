@@ -27,8 +27,7 @@ COMMANDS = [
 ]
 
 logger = logging.getLogger()
-twilio_logger = logging.getLogger('twilio.http_client')
-twilio_logger.setLevel(logging.WARNING)
+logging.getLogger('twilio.http_client').setLevel(logging.WARNING)
 
 class Comms(object):
     """Takes care of all outward communications"""

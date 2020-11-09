@@ -3,12 +3,13 @@ Description=Chicken Robot
 After=network.target
 
 [Service]
+User=pi
 ExecStart=/usr/bin/python3 -u chickenrobot.py
 WorkingDirectory=/home/pi/dev/chickenrobot
 StandardOutput=inherit
 StandardError=inherit
-Restart=always
-User=pi
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

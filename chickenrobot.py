@@ -131,6 +131,7 @@ def main():
     # logging.warning('And this, too')
     # logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
     logging.info("Robot:Starting")
+    logging.info("Robot:I'm on duty.")
 
     # nuthin here yet
     chickenrobot = Chickenrobot()

@@ -128,7 +128,7 @@ class Camera(object):
         for file in os.listdir(config.IMAGE_DIR):
             if not file.endswith(config.IMAGE_FILE_POSTFIX):
                 continue
-                os.remove(os.path.join(config.IMAGE_DIR, file))
+            os.remove(os.path.join(config.IMAGE_DIR, file))
 
     def show_images(self):
         for image_num in range(config.ACTIVE_CAMS):

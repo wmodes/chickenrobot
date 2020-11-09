@@ -24,6 +24,7 @@ TIME_FORMAT = '%-I:%M%p'
 
 # Camera class
 #
+SFTP_LOG_LEVEL = logging.WARNING
 if sys.platform == "darwin":
     MAX_HORZ = 1920
     MAX_VERT = 1080

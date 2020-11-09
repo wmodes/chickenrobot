@@ -23,8 +23,8 @@ import logging
 LIGHT_OFF = 0
 LIGHT_ON = 1
 
-logging.getLogger("pysftp").setLevel(logging.WARNING)
-logging.getLogger("paramiko").setLevel(logging.WARNING)
+logging.getLogger("paramiko").setLevel(config.SFTP_LOG_LEVEL)
+logging.getLogger('paramiko.transport').setLevel(config.SFTP_LOG_LEVEL)
 
 # NOTE: max resolution of the hbv-1615 is 1280x1024
 # If you switch to another cam, you may have to adjust this

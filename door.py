@@ -109,7 +109,7 @@ class Door(object):
             # if the doors are CLOSED
             else:
                 # manual mode overrides auto - doors stay closed
-                logging.info("Doors:Remain in MANUAL mode; stay closed")
+                logging.debug("Doors:Remain in MANUAL mode; stay closed")
                 return None
 
     def close_door_auto(self):
@@ -135,6 +135,7 @@ class Door(object):
             # if the doors are CLOSED
             else:
                 # manual mode overrides auto - doors stay open
+                logging.debug("Doors:Remain in MANUAL mode; stay open")
                 return None
 
     def open_door_manual(self):

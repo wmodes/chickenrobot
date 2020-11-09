@@ -26,8 +26,8 @@ OPEN = 1
 AUTO = 0
 MANUAL = 1
 # Indicator modes
-OFF = 0
-ON = 1
+LIGHT_OFF = 1
+LIGHT_ON = 0
 
 STEP_COUNT = config.SPR
 STEP_DELAY = 1 / config.SPR   # 1 second / SPR
@@ -65,10 +65,10 @@ class Door(object):
     def _set_indicator(self, state):
         if (state == OPEN):
             logging.info("Doors:Turning off indicator")
-            GPIO.output(config.INDICATOR_PIN, OFF)
+            GPIO.output(config.INDICATOR_PIN, LIGHT_OFF)
         else:
             logging.info("Doors:Turning on indicator")
-            GPIO.output(config.INDICATOR_PIN, ON)
+            GPIO.output(config.INDICATOR_PIN, LIGHT_ON)
 
 
     def _move_door(self, state):

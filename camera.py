@@ -20,8 +20,8 @@ import pysftp
 import logging
 
 # CONSTANTS
-LIGHT_OFF = 0
-LIGHT_ON = 1
+LIGHT_OFF = 1
+LIGHT_ON = 0
 
 logging.getLogger("paramiko").setLevel(config.SFTP_LOG_LEVEL)
 logging.getLogger('paramiko.transport').setLevel(config.SFTP_LOG_LEVEL)

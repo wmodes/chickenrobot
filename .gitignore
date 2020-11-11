@@ -127,8 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-experiments/camera.py
+
+#vim
+*.swp
+
 *.bmp
 *.jpg
 door.state
-experiments/auth.py

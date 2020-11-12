@@ -10,6 +10,7 @@ import logging
 import pprint
 
 # CONSTANTS
+RECENT_MSG_MAX = 10
 
 COMMANDS = [
     "help",
@@ -36,7 +37,7 @@ class Comms(object):
         self.client = Client(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
         self.origin_num = origin_num
         self.target_nums = target_nums
-        # set logging level for (verbose) TWILIO
+        self.recent_msgs = []
 
     def random_signoff(self):
         return random.choice([
@@ -121,8 +122,10 @@ class Comms(object):
                 logging.debug("Comms:Msg found:%s", record.sid)
         command_list = []
         for msg in messages:
-            # check if on list of recipients
-            if msg.from_ not in config.TARGET_NUMS:
+            # check if msg in recent_msgs or
+            #   not in list of recipients
+            if msg.sid in self.recent_msgs or \
+               msg.from_ not in config.TARGET_NUMS:
                 # no, kill it
                 logging.debug("Comms:Deleting msg from number not in sub list from $s:%s", msg.from_, msg.body)
                 try:
@@ -130,6 +133,12 @@ class Comms(object):
                 except:
                     logging.warning("Comms:Failed to delete msg:sid %s", msg.sid)
                 continue
+            # looks like a valid msg so add it to recent_msgs
+            # we do this to prevent cycling if the delete message fails
+            self.recent_msgs.append(msg.sid)
+            # trim recent_msgs to RECENT_MSG_MAX elements
+            if len(self.recent_msgs) > RECENT_MSG_MAX:
+                del a[0:len(self.recent_msgs)-RECENT_MSG_MAX]
             # look for command within msg
             cmd = ""
             for keyword in COMMANDS:

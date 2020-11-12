@@ -8,9 +8,9 @@ import random
 from twilio.rest import Client
 import logging
 import pprint
+from datetime import datetime, timedelta
 
 # CONSTANTS
-RECENT_MSG_MAX = 10
 
 COMMANDS = [
     "help",
@@ -37,7 +37,7 @@ class Comms(object):
         self.client = Client(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
         self.origin_num = origin_num
         self.target_nums = target_nums
-        self.recent_msgs = []
+        self.last_fetch = datetime.now() - timedelta(minutes=60)
 
     def random_signoff(self):
         return random.choice([
@@ -101,19 +101,18 @@ class Comms(object):
         """check for commands via sms and respond"""
         # ref: https://www.twilio.com/docs/sms/tutorials/how-to-retrieve-and-modify-message-history-python
         #
-        # dial down loggging while we are in the (verbose) twillio API
-        # if we are not set to DEBUG level
-        # if (logger.level < logging.DEBUG):
-        #     logger.setLevel(logging.WARNING)
         # We fetch the list from the Twilio API
         try:
-            messages = self.client.messages.list(to=config.ORIGIN_NUM)
+            messages = self.client.messages.list(
+                to=config.ORIGIN_NUM,
+                date_sent_after=self.last_fetch
+            )
+            # if successful, record the date for our next fetch
+            self.last_fetch = datetime.now()
         except:
             logging.warning("Comms:Failed to get msg list")
         # and reverse it since it comes most recent first
         messages.reverse()
-        # restore loggging
-        # logger.setLevel(config.LOG_LEVEL)
         if not messages:
             logging.debug("Comms:No msgs found")
             return None
@@ -122,10 +121,8 @@ class Comms(object):
                 logging.debug("Comms:Msg found:%s", record.sid)
         command_list = []
         for msg in messages:
-            # check if msg in recent_msgs or
-            #   not in list of recipients
-            if msg.sid in self.recent_msgs or \
-               msg.from_ not in config.TARGET_NUMS:
+            # check if msg not in list of recipients
+            if msg.from_ not in config.TARGET_NUMS:
                 # no, kill it
                 logging.debug("Comms:Deleting msg from number not in sub list from $s:%s", msg.from_, msg.body)
                 try:
@@ -133,12 +130,6 @@ class Comms(object):
                 except:
                     logging.warning("Comms:Failed to delete msg:sid %s", msg.sid)
                 continue
-            # looks like a valid msg so add it to recent_msgs
-            # we do this to prevent cycling if the delete message fails
-            self.recent_msgs.append(msg.sid)
-            # trim recent_msgs to RECENT_MSG_MAX elements
-            if len(self.recent_msgs) > RECENT_MSG_MAX:
-                del a[0:len(self.recent_msgs)-RECENT_MSG_MAX]
             # look for command within msg
             cmd = ""
             for keyword in COMMANDS:

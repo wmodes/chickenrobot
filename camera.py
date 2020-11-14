@@ -38,6 +38,7 @@ class Camera(object):
         self.max_v = max_vert
         self.cam_array = []
         self.image_array = []
+        self.pic_filename_array = []
         self._setup_camlight()
         self._find_cams()
         self._setup_cams()
@@ -100,16 +101,15 @@ class Camera(object):
         # self._release_cams()
 
     def _write_images(self):
-        filename_array = []
+        self.pic_filename_array = []
         logging.debug("Camera:write_images()")
         for image_num in range(config.ACTIVE_CAMS):
             filename = config.IMAGE_FILE_BASE + '.' + str(uuid.uuid4()) + '.' + str(image_num) + config.IMAGE_FILE_POSTFIX
-            filename_array.append(filename)
+            self.pic_filename_array.append(filename)
             logging.debug("Camera:Image filename:%s", filename)
             cv.imwrite(filename, self.image_array[image_num])
-        return filename_array
 
-    def _upload_images(self, filename_array):
+    def _upload_images(self):
         logging.info("Camera:Uploading images")
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
@@ -126,7 +126,7 @@ class Camera(object):
                         sftp.remove(file)
                     # upload files
                     logging.debug("Camera:Uploading files via sftp")
-                    for filename in filename_array:
+                    for filename in self.pic_filename_array:
                         sftp.put(filename)
         except:
             logging.warning("Camera:Failed to upload photos")
@@ -145,10 +145,10 @@ class Camera(object):
     def take_and_upload_images(self):
         logging.debug("Camera:take_and_upload_images()")
         self._take_all_images()
-        filename_array = self._write_images()
-        self._upload_images(filename_array)
+        self._write_images()
+        self._upload_images()
         self._cleanup_images()
-        return filename_array
+        return self.pic_filename_array
 
     def turn_on_camlight(self):
         logging.info("Camera:Turning on camlight")

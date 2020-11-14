@@ -37,57 +37,80 @@ class Door(object):
 
     def __init__(self, revs):
         self.revs = revs
-        self.status = None
         self.mode = AUTO
+        self.state = None
         self._read_door_state()
-        GPIO.setwarnings(False)
-        GPIO.setmode(config.PINOUT_SCHEME)
-        GPIO.setup(config.DIR_PIN, GPIO.OUT)
-        GPIO.setup(config.STEP_PIN, GPIO.OUT)
-        GPIO.setup(config.INDICATOR_PIN, GPIO.OUT)
+        self._setup_door()
+        self._setup_indicator()
+        self._set_indicator(self.state)
+
+    def _setup_door(self):
+        try:
+            GPIO.setwarnings(False)
+            GPIO.setmode(config.PINOUT_SCHEME)
+            GPIO.setup(config.DIR_PIN, GPIO.OUT)
+            GPIO.setup(config.STEP_PIN, GPIO.OUT)
+        except:
+            logging.warning("Door:Failed to setup door (GPIO)")
+
+    def _setup_indicator(self):
+        try:
+            GPIO.setwarnings(False)
+            GPIO.setmode(config.PINOUT_SCHEME)
+            GPIO.setup(config.INDICATOR_PIN, GPIO.OUT)
+        except:
+            logging.warning("Door:Failed to setup indicator (GPIO)")
 
     def _store_door_state(self):
         with open(config.DOOR_STATE_FILE, 'w') as file:
-            file.write("DOOR_STATUS=" + str(self.status))
+            file.write("DOOR_STATUS=" + str(self.state))
 
     def _read_door_state(self):
         if (os.path.isfile(config.DOOR_STATE_FILE)):
             with open(config.DOOR_STATE_FILE, 'r') as file:
                 line = file.read()
             try:
-                self.status = int(line.split("=")[1].strip())
+                self.state = int(line.split("=")[1].strip())
             except ValueError:
-                self.status = CLOSED
+                self.state = CLOSED
         else:
-            self.status = CLOSED
+            self.state = CLOSED
             self._store_door_state()
 
     def _set_indicator(self, state):
         if (state == OPEN):
             logging.info("Doors:Turning off indicator")
-            GPIO.output(config.INDICATOR_PIN, LIGHT_OFF)
+            try:
+                GPIO.output(config.INDICATOR_PIN, LIGHT_OFF)
+            except:
+                logging.warning("Door:Failed to turn on indicator (GPIO)")
         else:
             logging.info("Doors:Turning on indicator")
-            GPIO.output(config.INDICATOR_PIN, LIGHT_ON)
-
+            try:
+                GPIO.output(config.INDICATOR_PIN, LIGHT_ON)
+            except:
+                logging.warning("Door:Failed to turn off indicator (GPIO)")
 
     def _move_door(self, state):
-        GPIO.output(config.DIR_PIN, state)
-        for x in range(self.revs * STEP_COUNT):
-            GPIO.output(config.STEP_PIN, GPIO.HIGH)
-            sleep(STEP_DELAY)
-            GPIO.output(config.STEP_PIN, GPIO.LOW)
-            sleep(STEP_DELAY)
+        try:
+            GPIO.output(config.DIR_PIN, state)
+            for x in range(self.revs * STEP_COUNT):
+                GPIO.output(config.STEP_PIN, GPIO.HIGH)
+                sleep(STEP_DELAY)
+                GPIO.output(config.STEP_PIN, GPIO.LOW)
+                sleep(STEP_DELAY)
+        except:
+            logging.warning("Door:Failed to operate door (GPIO)")
         # set indicator light
         self._set_indicator(state)
         # record status
-        self.status = state
+        self.state = state
         self._store_door_state()
 
     def open_door_auto(self):
         # if we are in auto mode
         if self.mode == AUTO:
-            if self.status == OPEN:
+            if self.state == OPEN:
                 # The doors are already open
                 # logging.info("Doors:Doors are already open (AUTO)")
                 return None
@@ -99,7 +122,7 @@ class Door(object):
         # if we are in MANUAL mode
         else:
             # if the doors are OPEN
-            if self.status == OPEN:
+            if self.state == OPEN:
                 logging.info("Doors:Open request received (AUTO)")
                 # return to AUTO mode
                 self.mode = AUTO
@@ -115,7 +138,7 @@ class Door(object):
     def close_door_auto(self):
         # if we are in auto mode
         if self.mode == AUTO:
-            if self.status == CLOSED:
+            if self.state == CLOSED:
                 # The doors are already closed
                 # logging.debug("Doors:Already closed (AUTO)")
                 return None
@@ -127,7 +150,7 @@ class Door(object):
         # if we are in MANUAL mode
         else:
             # if the doors are OPEN
-            if self.status == CLOSED:
+            if self.state == CLOSED:
                 logging.info("Doors:Close request received (AUTO)")
                 self.mode = AUTO
                 # The doors are already closed
@@ -140,7 +163,7 @@ class Door(object):
 
     def open_door_manual(self):
         logging.info("Doors:Open request received (MANUAL)")
-        if self.status == OPEN:
+        if self.state == OPEN:
             # switch to auto mode, so door will auto close at sunset
             # self.mode = AUTO
             logging.info("Doors:Already open (MANUAL)")
@@ -154,7 +177,7 @@ class Door(object):
 
     def close_door_manual(self):
         logging.info("Doors:Close request received (MANUAL)")
-        if self.status == CLOSED:
+        if self.state == CLOSED:
             # switch to auto mode, so door will auto open at sunrise
             self.mode = AUTO
             logging.info("Doors:Already closed (MANUAL)")
@@ -167,19 +190,19 @@ class Door(object):
             return "I just closed the doors. "
 
     def is_open(self):
-        return self.status == OPEN
+        return self.state == OPEN
 
     def is_closed(self):
-        return self.status == CLOSED
+        return self.state == CLOSED
 
     def is_open_and_auto(self):
-        return self.status == OPEN
+        return self.state == OPEN
 
     def is_closed(self):
-        return self.status == CLOSED
+        return self.state == CLOSED
 
     def report(self):
-        if self.status == CLOSED:
+        if self.state == CLOSED:
             # log "Door status: The door is currently CLOSED"
             text = "The doors are currently CLOSED "
             if (self.mode == AUTO):

@@ -65,6 +65,14 @@ class Camera(object):
             except:
                 logging.warning("Camera:Failed to setup cameras (GPIO)")
 
+    def _setup_camlight(self):
+        try:
+            GPIO.setmode(config.PINOUT_SCHEME)
+            GPIO.setup(config.CAMLIGHT_PIN, GPIO.OUT)
+            GPIO.output(config.CAMLIGHT_PIN, LIGHT_OFF)
+        except:
+            logging.warning("Camera:Failed to setup camlight (GPIO)")
+
     def _release_cams(self):
         """turn off cams after use"""
         for cam in self.cam_array:
@@ -141,10 +149,6 @@ class Camera(object):
         self._upload_images(filename_array)
         self._cleanup_images()
         return filename_array
-
-    def _setup_camlight(self):
-        GPIO.setmode(config.PINOUT_SCHEME)
-        GPIO.setup(config.CAMLIGHT_PIN, GPIO.OUT)
 
     def turn_on_camlight(self):
         logging.info("Camera:Turning on camlight")

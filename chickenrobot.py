@@ -42,8 +42,6 @@ class Chickenrobot(object):
         self.camera = Camera(config.MAX_HORZ, config.MAX_VERT)
 
     def on_duty(self):
-        # issue reports on start
-        # self.send_report_and_photos()
         while(1):
             #
             # Should the door be closed?
@@ -81,14 +79,14 @@ class Chickenrobot(object):
                 for request_num, cmd in command_list:
                     logging.info("Robot:Handling command from %s:%s ", request_num, cmd)
                     if cmd == "photo" or cmd == "image" or cmd == "picture":
-                        filename_array = self.camera.take_and_upload_images()
-                        self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, request_num)
+                        self.send_photos(request_num)
                     elif cmd == "close":
                         self.comms.send_text(self.door.close_door_manual(), request_num)
                     elif cmd == "open":
                         self.comms.send_text(self.door.open_door_manual(), request_num)
                     elif cmd == "status" or cmd == "report":
-                        self.send_report_and_photos(request_num)
+                        self.send_report(request_num)
+                        self.send_photos(request_num)
                     elif cmd == "door":
                         self.comms.send_text(self.door.report(), request_num)
                     elif cmd == "sun" or cmd == "light":
@@ -109,13 +107,19 @@ class Chickenrobot(object):
         msg_text += self.light.report()
         return(msg_text)
 
-    def send_report(self):
-        self.comms.send_text(self.report())
+    def send_report(self, passed_num=None):
+        self.comms.send_text(self.report(), passed_num)
+
+    def send_photos(self, passed_num=None):
+        if config.ACTIVE_CAMS:
+            filename_array = self.camera.take_and_upload_images()
+            self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, passed_num)
+        else:
+            self.comms.send_text("No cameras available, so no photos.", passed_num)
 
     def send_report_and_photos(self, passed_num=None):
-        self.comms.send_text(self.report(), passed_num)
-        filename_array = self.camera.take_and_upload_images()
-        self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, passed_num)
+        self.send_report(passed_num)
+        self.send_photos(passed_num)
 
 def main():
     logging.basicConfig(

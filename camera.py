@@ -85,9 +85,10 @@ class Camera(object):
         # capture image
         try:
             logging.info("Camera:Taking photo")
-            s, im = self.cam_array[cam_num].read()
+            s, raw_im = self.cam_array[cam_num].read()
         except:
             logging.warning("Camera:Failed to take photo")
+        im = cv.cvtColor(raw_im, cv.COLOR_BGR2GRAY)
         return(im)
 
     def _take_all_images(self):

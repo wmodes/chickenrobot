@@ -40,8 +40,9 @@ class Camera(object):
         self.image_array = []
         self.pic_filename_array = []
         self._setup_camlight()
-        self._find_cams()
-        self._setup_cams()
+        # we will find and setup cams before each photo
+        # self._find_cams()
+        # self._setup_cams()
 
     def _find_cams(self):
         """find usb cams"""
@@ -92,6 +93,11 @@ class Camera(object):
         return(im)
 
     def _take_all_images(self):
+        # find and setup cams
+        #   - inefficient but prevents opencv's frame buffer problems
+        self._find_cams()
+        self._setup_cams()
+        # turn on camlight
         self.turn_on_camlight()
         sleep(0.5)
         self.image_array = []
@@ -99,7 +105,8 @@ class Camera(object):
             self.image_array.append(self._take_image(cam_num))
         sleep(0.5)
         self.turn_off_camlight()
-        # self._release_cams()
+        # turn off cams
+        self._release_cams()
 
     def _write_images(self):
         self.pic_filename_array = []

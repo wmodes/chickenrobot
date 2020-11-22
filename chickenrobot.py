@@ -111,8 +111,8 @@ class Chickenrobot(object):
         self.comms.send_text(self.report(), passed_num)
 
     def send_photos(self, passed_num=None):
-        if config.ACTIVE_CAMS:
-            filename_array = self.camera.take_and_upload_images()
+        filename_array = self.camera.take_and_upload_images()
+        if len(filename_array):
             self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, passed_num)
         else:
             self.comms.send_text("No cameras available, so no photos.", passed_num)

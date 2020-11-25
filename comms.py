@@ -6,6 +6,7 @@
 import config
 import random
 from twilio.rest import Client
+import pysftp
 import logging
 import pprint
 from datetime import datetime, timedelta
@@ -79,6 +80,8 @@ class Comms(object):
             my_target_nums = [passed_num]
         else:
             my_target_nums = self.target_nums
+        if not len(filename_array):
+            msg_text = "No cameras available, so no photos."
         msg_text = config.MSG_PREFIX + msg_text + "\n" + self.random_signoff()
         image_array = []
         for filename in filename_array:
@@ -96,6 +99,42 @@ class Comms(object):
                 )
             except:
                 logging.warning("Comms:Failed to send msg to %s:%s", phone_number, msg_text)
+
+    def upload_status(self, status_text, image_text, filename_array):
+        status_text = config.MSG_PREFIX + status_text + "\n"
+        image_text = image_text + "\n" + self.random_signoff()
+        html_text = ''
+        # add status
+        html_text += f'<div class="status"><pre style="white-space:pre-wrap;word-wrap:break-word;">{status_text}</pre></div>'
+        # add photos
+        html_text += '<div class="images">'
+        if not len(filename_array):
+            image_text = "No cameras available, so no photos."
+        for filename in filename_array:
+            image_url = config.IMAGE_URL_BASE + filename
+            html_text += f'<img src="{image_url}" width=300>'
+        html_text += '</div>'
+        html_text += f'<div class="image-text"><pre>{image_text}</pre></div>'
+        print("html text:", html_text)
+        # write status locally
+        with open(config.STATUS_FILE, 'w') as out_file:
+            out_file.write(html_text)
+        # upload status
+        logging.info("Comms:Uploading status")
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None
+        try:
+            with pysftp.Connection(host=config.SFTP_SERVER,
+                                   username=config.SFTP_USER,
+                                   password=config.SFTP_PASSWORD,
+                                   log=config.SFTP_LOG,
+                                   cnopts=cnopts) as sftp:
+                with sftp.cd(config.SFTP_MAIN_DIR):
+                    # upload files
+                    logging.debug("Comms:Uploading status file via sftp")
+                    sftp.put(config.STATUS_FILE)
+        except:
+            logging.warning("Comms:Failed to upload status")
 
     def check_for_commands(self):
         """check for commands via sms and respond"""

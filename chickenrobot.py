@@ -85,8 +85,7 @@ class Chickenrobot(object):
                     elif cmd == "open":
                         self.comms.send_text(self.door.open_door_manual(), request_num)
                     elif cmd == "status" or cmd == "report":
-                        self.send_report(request_num)
-                        self.send_photos(request_num)
+                        self.send_report_and_photos(request_num)
                     elif cmd == "door":
                         self.comms.send_text(self.door.report(), request_num)
                     elif cmd == "sun" or cmd == "light":
@@ -108,18 +107,20 @@ class Chickenrobot(object):
         return(msg_text)
 
     def send_report(self, passed_num=None):
-        self.comms.send_text(self.report(), passed_num)
+        status = self.report()
+        self.comms.send_text(status, passed_num)
 
     def send_photos(self, passed_num=None):
         filename_array = self.camera.take_and_upload_images()
-        if len(filename_array):
-            self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, passed_num)
-        else:
-            self.comms.send_text("No cameras available, so no photos.", passed_num)
+        self.comms.send_text_and_photos("Here's photos of the coop. ", filename_array, passed_num)
 
     def send_report_and_photos(self, passed_num=None):
-        self.send_report(passed_num)
-        self.send_photos(passed_num)
+        status_text = self.report()
+        self.comms.send_text(status_text, passed_num)
+        filename_array = self.camera.take_and_upload_images()
+        image_text = "Here's photos of the coop. "
+        self.comms.send_text_and_photos(image_text, filename_array, passed_num)
+        self.comms.upload_status(status_text, image_text, filename_array)
 
 def main():
     logging.basicConfig(

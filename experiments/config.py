@@ -40,13 +40,22 @@ else:
     MAX_VERT = 1024
 MAX_CAMS = 4
 ACTIVE_CAMS = 0
+
+# Local file deets
+#
 IMAGE_DIR = "images"
 IMAGE_FILE_BASE = IMAGE_DIR + "/image"
 IMAGE_FILE_POSTFIX = '.jpg'
 IMAGE_URL_BASE = 'https://modes.io/interactive/chickenrobot/'
+DOOR_STATE_FILE = "door.state"
+STATUS_FILE = "status.html"
+
+# SFTP deets
+#
 SFTP_SERVER = 'sftp.sd5.gpaas.net'
 SFTP_USER = '41496'
 SFTP_IMAGE_DIR = '/lamp0/web/vhosts/modes.io/htdocs/interactive/chickenrobot/images'
+SFTP_MAIN_DIR = '/lamp0/web/vhosts/modes.io/htdocs/interactive/chickenrobot'
 SFTP_LOG = 'logs/sftp.log'
 SFTP_PASSWORD = os.environ['SFTP_PASSWORD']
 
@@ -62,7 +71,6 @@ PINOUT_SCHEME = GPIO.BCM   # Boradcom pin numbering (NOT Wiring Pin numbering)
 #
 SPR = 200           # Steps per revolution (360/1.8) from stepper datasheet
 REVS = 10           # number of revolutions to bring door up or lower it down
-DOOR_STATE_FILE = "door.state"
 
 # Comms class
 #

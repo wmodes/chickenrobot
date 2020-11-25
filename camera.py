@@ -41,7 +41,7 @@ class Camera(object):
         self.pic_filename_array = []
         self._setup_camlight()
         # we will find and setup cams before each photo
-        # self._find_cams()
+        self._find_cams()
         # self._setup_cams()
 
     def _find_cams(self):

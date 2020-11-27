@@ -147,7 +147,7 @@ class Comms(object):
                 date_sent_after=self.last_fetch
             )
             # if successful, record the date for our next fetch
-            self.last_fetch = datetime.now()
+            self.last_fetch = datetime.now() - timedelta(minutes=15)
         except:
             logging.warning("Comms:Failed to get msg list")
         # and reverse it since it comes most recent first

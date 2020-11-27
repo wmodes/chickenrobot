@@ -38,7 +38,7 @@ if sys.platform == "darwin":
 else:
     MAX_HORZ = 1280
     MAX_VERT = 1024
-MAX_CAMS = 4
+MAX_CAMS = 8
 ACTIVE_CAMS = 0
 
 # Local file deets

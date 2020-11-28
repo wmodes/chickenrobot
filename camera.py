@@ -91,7 +91,7 @@ class Camera(object):
             logging.warning("Camera:Failed to take photo")
         logging.debug("Camera:Filtering photo")
         print("raw_im type:", type(raw_im))
-        if raw_im:
+        if raw_im != None:
             im = cv.cvtColor(raw_im, cv.COLOR_BGR2GRAY)
         else:
             im = raw_im

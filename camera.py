@@ -91,7 +91,10 @@ class Camera(object):
             logging.warning("Camera:Failed to take photo")
         logging.debug("Camera:Filtering photo")
         print("raw_im type:", type(raw_im))
-        im = cv.cvtColor(raw_im, cv.COLOR_BGR2GRAY)
+        if raw_im:
+            im = cv.cvtColor(raw_im, cv.COLOR_BGR2GRAY)
+        else:
+            im = raw_im
         return(im)
 
     def _take_all_images(self):

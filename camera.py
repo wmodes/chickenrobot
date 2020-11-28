@@ -110,7 +110,7 @@ class Camera(object):
         for cam_num in range(config.ACTIVE_CAMS):
             image = self._take_image(cam_num)
             if image is not None:
-                self.image_array.append(self._take_image(cam_num))
+                self.image_array.append(image)
         sleep(0.5)
         self.turn_off_camlight()
         # turn off cams

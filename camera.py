@@ -40,21 +40,22 @@ class Camera(object):
         self.image_array = []
         self.image_filename_array = []
         self._setup_camlight()
-        # we will find and setup cams before each photo
+        # we will find and setup cams before each photo,
+        # but for now we want the count of how many cams we have
         self._find_cams()
         # self._setup_cams()
+        self._release_cams()
 
     def _find_cams(self):
         """find usb cams"""
         self.cam_array = []
         for cam_num in range(config.MAX_CAMS):
             cam = cv.VideoCapture(cam_num)
-            if cam is None or not cam.isOpened():
-                logging.debug("Camera:Camera %s not found", str(cam_num))
-                pass
-            else:
+            if cam is not None and cam.isOpened():
                 self.cam_array.append(cam)
                 logging.debug("Camera:Camera %s found", str(cam_num))
+            else:
+                logging.debug("Camera:Camera %s not found", str(cam_num))
         config.ACTIVE_CAMS = len(self.cam_array)
         logging.info("Camera:Active cameras:%s", str(config.ACTIVE_CAMS))
 
@@ -65,7 +66,7 @@ class Camera(object):
                 cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
                 cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
             except:
-                logging.warning("Camera:Failed to setup cameras (GPIO)")
+                logging.warning("Camera:Failed to setup camera (cv)"")
 
     def _setup_camlight(self):
         try:
@@ -107,7 +108,9 @@ class Camera(object):
         sleep(0.5)
         self.image_array = []
         for cam_num in range(config.ACTIVE_CAMS):
-            self.image_array.append(self._take_image(cam_num))
+            image = self._take_image(cam_num)
+            if image is not None:
+                self.image_array.append(self._take_image(cam_num))
         sleep(0.5)
         self.turn_off_camlight()
         # turn off cams

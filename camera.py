@@ -66,7 +66,7 @@ class Camera(object):
                 cam.set(cv.CAP_PROP_FRAME_WIDTH, self.max_h)
                 cam.set(cv.CAP_PROP_FRAME_HEIGHT, self.max_v)
             except:
-                logging.warning("Camera:Failed to setup camera (cv)"")
+                logging.warning("Camera:Failed to setup camera (cv)")
 
     def _setup_camlight(self):
         try:

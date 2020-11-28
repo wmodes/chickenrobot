@@ -38,7 +38,7 @@ class Camera(object):
         self.max_v = max_vert
         self.cam_array = []
         self.image_array = []
-        self.pic_filename_array = []
+        self.image_filename_array = []
         self._setup_camlight()
         # we will find and setup cams before each photo
         self._find_cams()
@@ -89,6 +89,8 @@ class Camera(object):
             s, raw_im = self.cam_array[cam_num].read()
         except:
             logging.warning("Camera:Failed to take photo")
+        logging.debug("Camera:Filtering photo")
+        print("raw_im type:", type(raw_im))
         im = cv.cvtColor(raw_im, cv.COLOR_BGR2GRAY)
         return(im)
 
@@ -109,11 +111,11 @@ class Camera(object):
         self._release_cams()
 
     def _write_images(self):
-        self.pic_filename_array = []
+        self.image_filename_array = []
         logging.debug("Camera:write_images()")
         for image_num in range(config.ACTIVE_CAMS):
             filename = config.IMAGE_FILE_BASE + '.' + str(uuid.uuid4()) + '.' + str(image_num) + config.IMAGE_FILE_POSTFIX
-            self.pic_filename_array.append(filename)
+            self.image_filename_array.append(filename)
             logging.debug("Camera:Image filename:%s", filename)
             cv.imwrite(filename, self.image_array[image_num])
 
@@ -134,7 +136,7 @@ class Camera(object):
                         sftp.remove(file)
                     # upload files
                     logging.debug("Camera:Uploading files via sftp")
-                    for filename in self.pic_filename_array:
+                    for filename in self.image_filename_array:
                         sftp.put(filename)
         except:
             logging.warning("Camera:Failed to upload photos")
@@ -156,7 +158,7 @@ class Camera(object):
         self._write_images()
         self._upload_images()
         self._cleanup_images()
-        return self.pic_filename_array
+        return self.image_filename_array
 
     def turn_on_camlight(self):
         logging.info("Camera:Turning on camlight")

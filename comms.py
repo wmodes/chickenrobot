@@ -115,7 +115,7 @@ class Comms(object):
             html_text += f'<img src="{image_url}" width=300>'
         html_text += '</div>'
         html_text += f'<div class="image-text"><pre>{image_text}</pre></div>'
-        print("html text:", html_text)
+        # print("html text:", html_text)
         # write status locally
         with open(config.STATUS_FILE, 'w') as out_file:
             out_file.write(html_text)
@@ -144,10 +144,10 @@ class Comms(object):
         try:
             messages = self.client.messages.list(
                 to=config.ORIGIN_NUM,
-                date_sent_after=self.last_fetch
+                date_sent_after=self.last_fetch - timedelta(minutes=15)
             )
             # if successful, record the date for our next fetch
-            self.last_fetch = datetime.now() - timedelta(minutes=15)
+            self.last_fetch = datetime.now()
         except:
             logging.warning("Comms:Failed to get msg list")
         # and reverse it since it comes most recent first

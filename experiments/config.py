@@ -17,7 +17,7 @@ import logging
 
 # Chickenrobot class
 LOG_FILENAME = "logs/cr.log"
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
 
 # Light class
 #

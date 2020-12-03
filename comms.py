@@ -45,7 +45,6 @@ class Comms(object):
             "Message from Chicken Robot:\n",
             "Chicken Robot says:\n",
             "Chicken Robot sez:\n",
-            "Chicken Robot says:\n",
             "Chicken Robot states:\n",
             "Chicken Robot reports:\n",
             "Here's what Chicken Robot reports:\n",

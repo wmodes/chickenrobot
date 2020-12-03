@@ -40,6 +40,20 @@ class Comms(object):
         self.target_nums = target_nums
         self.last_fetch = datetime.now() - timedelta(minutes=60)
 
+    def random_signon(self):
+        return random.choice([
+            "Message from Chicken Robot:\n",
+            "Chicken Robot says:\n",
+            "Chicken Robot sez:\n",
+            "Chicken Robot says:\n",
+            "Chicken Robot states:\n",
+            "Chicken Robot reports:\n",
+            "Here's what Chicken Robot reports:\n",
+            "A missive from Chicken Robot:\n",
+            "Communique from Chicken Robot:\n",
+            "Chicken Robot issues this manifesto:\n"
+        ])
+
     def random_signoff(self):
         return random.choice([
             "Bawwwk! 🐓🤖",
@@ -102,7 +116,7 @@ class Comms(object):
             my_target_nums = [passed_num]
         else:
             my_target_nums = self.target_nums
-        msg_text = config.MSG_PREFIX + msg_text + "\n" + self.random_signoff()
+        msg_text = self.random_signon() + msg_text + "\n" + self.random_signoff()
         for phone_number in my_target_nums:
             logging.info("Comms:Sending msg to %s", phone_number)
             try:
@@ -121,7 +135,7 @@ class Comms(object):
             my_target_nums = self.target_nums
         if not len(filename_array):
             msg_text = "No cameras available, so no photos."
-        msg_text = config.MSG_PREFIX + msg_text + "\n" + self.random_signoff()
+        msg_text = self.random_signon() + msg_text + "\n" + self.random_signoff()
         image_array = []
         for filename in filename_array:
             image_url = config.IMAGE_URL_BASE + filename
@@ -140,7 +154,7 @@ class Comms(object):
                 logging.warning("Comms:Failed to send msg to %s:%s", phone_number, msg_text)
 
     def upload_status(self, status_text, image_text, filename_array):
-        status_text = config.MSG_PREFIX + status_text + "\n"
+        status_text = self.random_signon() + status_text + "\n"
         image_text = image_text + "\n" + self.random_signoff()
         html_text = ''
         # add status

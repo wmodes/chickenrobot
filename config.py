@@ -78,7 +78,6 @@ REVS = 10           # number of revolutions to bring door up or lower it down
 TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
 TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
 TWILIO_LOG_LEVEL = logging.WARNING
-MSG_PREFIX = "Message from Chicken Robot:\n"
 MSG_POSTFIX = "\nBawwwk! 🐓🤖"
 ORIGIN_NUM = '+18313370604'
 # TARGET_NUMS = ['+18314190044', '+18312269992', '+17025929231']

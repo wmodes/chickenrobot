@@ -49,6 +49,7 @@ IMAGE_FILE_POSTFIX = '.jpg'
 IMAGE_URL_BASE = 'https://modes.io/interactive/chickenrobot/'
 DOOR_STATE_FILE = "door.state"
 STATUS_FILE = "status.html"
+NOIMAGE_FILE = "image-not-available.png"
 
 # SFTP deets
 #

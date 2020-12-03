@@ -45,6 +45,7 @@ class Camera(object):
         self._find_cams()
         # self._setup_cams()
         self._release_cams()
+        self.noimage = cv.imread(config.NOIMAGE_FILE)
 
     def _find_cams(self):
         """find usb cams"""
@@ -110,6 +111,9 @@ class Camera(object):
             image = self._take_image(cam_num)
             if image is not None:
                 self.image_array.append(image)
+            else:
+                # TODO: Replace with "Image Not Available" image
+                self.image_array.append(self.noimage)
         sleep(0.5)
         self.turn_off_camlight()
         # turn off cams
@@ -118,7 +122,7 @@ class Camera(object):
     def _write_images(self):
         self.image_filename_array = []
         logging.debug("Camera:write_images()")
-        for image_num in range(config.ACTIVE_CAMS):
+        for image_num in range(len(self.image_array)):
             filename = config.IMAGE_FILE_BASE + '.' + str(uuid.uuid4()) + '.' + str(image_num) + config.IMAGE_FILE_POSTFIX
             self.image_filename_array.append(filename)
             logging.debug("Camera:Image filename:%s", filename)

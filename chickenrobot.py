@@ -12,6 +12,7 @@ from time import sleep
 from streamtologger import StreamToLogger
 import sys
 import logging
+import pprint
 
 # General psuedocode
 #

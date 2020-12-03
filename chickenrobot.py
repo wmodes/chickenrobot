@@ -141,7 +141,6 @@ def main():
     # logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
     logging.info("Robot:Starting")
     logging.info("Robot:I'm on duty.")
-    raise Exception('Test to standard error')
 
     # nuthin here yet
     chickenrobot = Chickenrobot()

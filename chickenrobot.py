@@ -87,7 +87,7 @@ class Chickenrobot(object):
                     elif cmd == "open":
                         self.comms.send_text(self.door.open_door_manual(), request_num)
                     elif cmd == "status" or cmd == "report":
-                        self.send_report_and_photos(request_numl)
+                        self.send_report_and_photos(request_num)
                     elif cmd == "door":
                         self.comms.send_text(self.door.report(), request_num)
                     elif cmd == "sun" or cmd == "light":

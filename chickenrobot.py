@@ -9,8 +9,9 @@ from light import Light
 from door import Door
 from camera import Camera
 from time import sleep
+from streamtologger import StreamToLogger
+import sys
 import logging
-import pprint
 
 # General psuedocode
 #
@@ -85,7 +86,7 @@ class Chickenrobot(object):
                     elif cmd == "open":
                         self.comms.send_text(self.door.open_door_manual(), request_num)
                     elif cmd == "status" or cmd == "report":
-                        self.send_report_and_photos(request_num)
+                        self.send_report_and_photos(request_numl)
                     elif cmd == "door":
                         self.comms.send_text(self.door.report(), request_num)
                     elif cmd == "sun" or cmd == "light":
@@ -130,13 +131,17 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=config.LOG_LEVEL
     )
-    logger = logging.getLogger()
+    logger = logging.getLogger("chickenrobot")
+    # redirect stdout and stderr to log file
+    sys.stdout = StreamToLogger(logger,logging.INFO)
+    sys.stderr = StreamToLogger(logger,logging.ERROR)
     # logging.debug('This message should go to the log file')
     # logging.info('So should this')
     # logging.warning('And this, too')
     # logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
     logging.info("Robot:Starting")
     logging.info("Robot:I'm on duty.")
+    raise Exception('Test to standard error')
 
     # nuthin here yet
     chickenrobot = Chickenrobot()
@@ -145,6 +150,9 @@ def main():
     except KeyboardInterrupt:
         logging.info("Robot:I'm off duty.")
         logging.info("Robot:Finishing")
+    except:
+        logging.exception('Got exception on main handler')
+        raise
 
 if __name__ == '__main__':
     main()

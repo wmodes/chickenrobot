@@ -200,16 +200,15 @@ class Comms(object):
             )
             # if successful, record the date for our next fetch
             self.last_fetch = datetime.now()
+            # and reverse it since it comes most recent first
+            messages.reverse()
         except:
             logging.warning("Comms:Failed to get msg list")
-        # and reverse it since it comes most recent first
-        messages.reverse()
         if not messages:
             logging.debug("Comms:No msgs found")
             return None
-        else:
-            for record in messages:
-                logging.debug("Comms:Msg found:%s", record.sid)
+        for record in messages:
+            logging.debug("Comms:Msg found:%s", record.sid)
         command_list = []
         for msg in messages:
             # check if msg not in list of recipients

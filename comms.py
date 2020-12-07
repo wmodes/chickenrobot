@@ -164,7 +164,7 @@ class Comms(object):
             image_text = "No cameras available, so no photos."
         for filename in filename_array:
             image_url = config.IMAGE_URL_BASE + filename
-            html_text += f'<img src="{image_url}" width=300>'
+            html_text += f'<img src="{image_url}" width=250 padding=5>'
         html_text += '</div>'
         html_text += f'<div class="image-text"><pre>{image_text}</pre></div>'
         # print("html text:", html_text)

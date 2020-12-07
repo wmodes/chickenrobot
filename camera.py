@@ -148,7 +148,7 @@ class Camera(object):
                     for filename in self.image_filename_array:
                         sftp.put(filename)
             # let's wait a bit to make sure images get uploaded
-            sleep(3)
+            sleep(5)
         except:
             logging.warning("Camera:Failed to upload photos")
 

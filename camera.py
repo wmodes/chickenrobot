@@ -147,6 +147,8 @@ class Camera(object):
                     logging.debug("Camera:Uploading files via sftp")
                     for filename in self.image_filename_array:
                         sftp.put(filename)
+            # let's wait a bit to make sure images get uploaded
+            sleep(3)
         except:
             logging.warning("Camera:Failed to upload photos")
 

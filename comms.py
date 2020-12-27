@@ -193,6 +193,7 @@ class Comms(object):
         # ref: https://www.twilio.com/docs/sms/tutorials/how-to-retrieve-and-modify-message-history-python
         #
         # We fetch the list from the Twilio API
+        messages = None
         try:
             messages = self.client.messages.list(
                 to=config.ORIGIN_NUM,

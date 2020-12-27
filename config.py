@@ -62,6 +62,7 @@ SFTP_PASSWORD = os.environ['SFTP_PASSWORD']
 
 # GPIO Configs
 #
+#
 DIR_PIN = 20            # Direction GPIO pin
 STEP_PIN = 21           # Step GPIO pin
 CAMLIGHT_PIN = 19       # Activate camlight GPIO pin

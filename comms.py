@@ -107,7 +107,8 @@ class Comms(object):
             "A tender adieu, 🐓🤖",
             "and my love+, 🐓🤖",
             "Yr sincere friend, 🐓🤖",
-            "And I thank you for your attention, and I'm out of here, 🐓🤖"
+            "And I thank you for your attention, and I'm out of here, 🐓🤖",
+            "Bless the rains, 🐓🤖"
         ])
 
     def send_text(self, msg_text, passed_num=None):
